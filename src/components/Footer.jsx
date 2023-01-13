@@ -54,7 +54,11 @@ function SmallPrint() {
     <div className="flex flex-col items-center justify-between gap-5 pt-8 border-t border-zinc-900/5 dark:border-white/5 sm:flex-row">
       <p className="text-xs text-zinc-600 dark:text-zinc-400">
         Made with ♥️ {new Date().getFullYear()} by{' '}
-        <a href="educalvolopez.com" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://educalvolopez.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Edu calvo
         </a>
       </p>
