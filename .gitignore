@@ -31,6 +31,8 @@ yarn-error.log*
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# generated files
+/public/rss/
+public/sitemap-0.xml
+public/robots.txt
+public/sitemap.xml
