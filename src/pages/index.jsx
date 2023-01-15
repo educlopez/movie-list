@@ -1,22 +1,15 @@
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
-import { fetchMovies } from '@/pages/api/tmdb';
 import MovieList from '@/components/MovieList';
+import { Tab } from '@headlessui/react';
+import clsx from 'clsx';
+import { FilmIcon, MonitorIcon } from '@iconicicons/react';
 
 export default function Home() {
-  const [movies, setMovies] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchMovies();
-        setMovies(data.results.slice(0, 10));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, []);
-
+  const limitNormal = 10;
+  const tabs = [
+    { name: 'Movies', href: '#', icon: FilmIcon, current: true },
+    { name: 'TV Shows', href: '#', icon: MonitorIcon, current: false }
+  ];
   return (
     <>
       <Head>
@@ -33,9 +26,65 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="">
-        <MovieList movies={movies} />
-      </div>
+      <Tab.Group as="div" defaultIndex={0}>
+        {({ selectedIndex }) => (
+          <>
+            <Tab.List className="flex gap-4 px-0 mb-4">
+              {tabs.map((tab, featureIndex) => (
+                <Tab
+                  className={clsx(
+                    selectedIndex === featureIndex
+                      ? 'border-emerald-400 text-emerald-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                    'group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm mr-2'
+                  )}
+                  key={tab.name}
+                >
+                  <tab.icon
+                    className={clsx(
+                      selectedIndex === featureIndex
+                        ? 'text-emerald-400'
+                        : 'text-gray-400 group-hover:text-gray-500',
+                      '-ml-0.5 mr-2 h-5 w-5'
+                    )}
+                    aria-hidden="true"
+                  />
+                  {tab.name}
+                </Tab>
+              ))}
+            </Tab.List>
+            <Tab.Panels>
+              <Tab.Panel>
+                <MovieList
+                  isHomePage
+                  endpoint="/api/movie/now/1"
+                  href="/movie/now/1"
+                  limit={limitNormal}
+                  title="Now playing"
+                />
+                <MovieList
+                  isHomePage
+                  endpoint="/api/movie/popular/1"
+                  href="/movie/popular/1"
+                  limit={limitNormal}
+                  title="Popular"
+                />
+              </Tab.Panel>
+              <Tab.Panel>
+                <MovieList
+                  isHomePage
+                  endpoint="/api/tv/popular/1"
+                  href="/tv/popular/1"
+                  limit={limitNormal}
+                  media_type="tv"
+                  title="Popular"
+                  type="tv series"
+                />
+              </Tab.Panel>
+            </Tab.Panels>
+          </>
+        )}
+      </Tab.Group>
     </>
   );
 }

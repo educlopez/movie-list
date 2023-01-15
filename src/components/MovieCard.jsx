@@ -1,44 +1,73 @@
-import { useState, useEffect } from 'react';
-import { fetchMovies } from '@/pages/api/tmdb';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
-import Link from 'next/link';
+import { FilmIcon, MonitorIcon } from '@iconicicons/react';
 
-const MovieCard = ({ movieId }) => {
-  const [movie, setMovie] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchMovies();
-        setMovie(data.results.find((m) => m.id === movieId));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchData();
-  }, [movieId]);
+export default function MovieCard({ id, category, rating, src, title, year }) {
+  const router = useRouter();
 
-  if (!movie) {
-    return <p>Loading...</p>;
-  }
+  const handleClick = () => {
+    if (category === 'movie') {
+      router.push(`/movie/${id}`);
+    } else if (category === 'tv') {
+      router.push(`/tv/${id}`);
+    }
+  };
 
   return (
     <li className="relative flex flex-col items-start group ">
-      <Link
-        href={`/movie/${movieId}`}
-        className="transition group-hover:scale-110"
-      >
+      <div onClick={handleClick} className="transition group-hover:scale-110">
         <Image
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-          alt={movie.title}
+          src={src}
+          alt={title}
           width={300}
           height={450}
           className="w-full rounded-md"
         />
         <p className="mt-1 text-center dark:text-zinc-400 text-zinc-600">
-          {movie.title}
+          {title}
         </p>
-      </Link>
+        <p className="mt-1 text-center dark:text-zinc-400 text-zinc-600">
+          {renderYear(year)}
+        </p>
+        <p className="flex mt-1 text-center dark:text-zinc-400 text-zinc-600">
+          {renderCategoryIcon(category)}
+          <span className="pl-[6px] pr-[6px]">
+            {renderCategoryText(category)}
+          </span>
+        </p>
+      </div>
     </li>
   );
-};
-export default MovieCard;
+}
+
+function renderYear(year) {
+  if (!year) {
+    return 'N/A';
+  } else {
+    return year.substring(0, 4);
+  }
+}
+
+function renderCategoryIcon(category) {
+  if (category === 'movie') {
+    return <FilmIcon className="pl-1 text-base" />;
+  } else {
+    return <MonitorIcon className="pl-1 text-base" />;
+  }
+}
+
+function renderCategoryText(category) {
+  if (category === 'movie') {
+    return 'Movie';
+  } else {
+    return 'TV Series';
+  }
+}
+
+function renderRating(rating) {
+  if (rating === true) {
+    return '18+';
+  } else {
+    return 'E';
+  }
+}

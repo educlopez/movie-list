@@ -1,6 +1,6 @@
 {
   "name": "movie-list",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,10 +14,11 @@
     "@algolia/autocomplete-core": "^1.7.3",
     "@algolia/autocomplete-preset-algolia": "^1.7.3",
     "@headlessui/react": "^1.7.7",
-    "@heroicons/react": "^2.0.13",
+    "@iconicicons/react": "^1.5.1",
     "@next/font": "13.1.1",
     "@tailwindcss/typography": "^0.5.4",
     "@vercel/og": "^0.0.20",
+    "algoliasearch": "^4.14.2",
     "autoprefixer": "^10.4.12",
     "clsx": "^1.2.1",
     "focus-visible": "^5.2.0",
@@ -27,10 +28,11 @@
     "postcss-focus-visible": "^6.0.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-rating": "^2.0.5",
     "remark-gfm": "^3.0.1",
     "swr": "^2.0.0",
-    "algoliasearch": "^4.14.2",
     "tailwindcss": "^3.2.1",
+    "uuid": "^9.0.0",
     "zustand": "^4.1.4"
   },
   "devDependencies": {

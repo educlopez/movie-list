@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['jsx'],
+  pageExtensions: ['jsx', 'js'],
   reactStrictMode: true,
   experimental: {
     scrollRestoration: true
