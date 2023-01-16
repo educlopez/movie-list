@@ -9,7 +9,7 @@ export default function FilmImage({ src, title }) {
         src={`${TMDB_IMAGE_ENDPOINT}/${src}`}
         alt={title}
         width={350}
-        height={530}
+        height={525}
         placeholder="blur"
         blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(350, 530))}`}
         unoptimized

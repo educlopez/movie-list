@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 /* Custom horizontal scroll for trending section */
-.h-scroll::-webkit-scrollbar {
+.y-scroll::-webkit-scrollbar {
   border-radius: 10px;
-  height: 8px;
-  width: 8px;
+  height: 4px;
+  width: 4px;
 }
-.h-scroll::-webkit-scrollbar-thumb:horizontal {
-  background: #5a698f; /* app-greyish-blue */
+.y-scroll::-webkit-scrollbar-thumb:horizontal {
+  background: #10b981;
   border-radius: 10px;
 }

@@ -2,7 +2,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import FilmCasts from '../../components/FilmCasts';
-import FilmRating from '@/components/FilmRating';
 import FilmGenres from '@/components/FilmGenres';
 import FilmHeading from '@/components/FilmHeading';
 import FilmImage from '@/components/FilmImage';
@@ -10,11 +9,7 @@ import FilmInfo from '@/components/FilmInfo';
 import FilmSynopsis from '@/components/FilmSynopsis';
 import Loading from '@/components/Loading';
 import { fetcher } from '@/utils';
-import {
-  renderLanguage,
-  renderRating,
-  renderStatus
-} from '@/pages/movie/[id].jsx';
+import { renderLanguage, renderStatus } from '@/pages/movie/[id].jsx';
 
 export default function TV() {
   const router = useRouter();
@@ -27,7 +22,7 @@ export default function TV() {
   return (
     <>
       <Head>
-        <title>{tv.detail.name} | Watcho</title>
+        <title>{tv.detail.name} - Movielist </title>
       </Head>
       {tv ? (
         <>
@@ -35,7 +30,6 @@ export default function TV() {
             <FilmImage src={tv.detail.poster_path} title={tv.detail.name} />
             <div className="md:w-3/5">
               <FilmHeading tagline={tv.detail.tagline} title={tv.detail.name} />
-              <FilmRating number={renderRating(tv.detail.vote_average)} />
               <FilmInfo
                 media_type="tv"
                 language={renderLanguage(tv.detail.spoken_languages || [])}

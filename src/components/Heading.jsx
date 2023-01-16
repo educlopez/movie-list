@@ -1,12 +1,6 @@
 import Link from 'next/link';
 
-export default function Heading({
-  href,
-  isHomePage,
-  isTrending, // TODO: Do we need this here?
-  media_type,
-  title
-}) {
+export default function Heading({ href, isHomePage, media_type, title }) {
   return (
     <div className="flex items-end justify-between mb-4 sm:mb-6 text-zinc-900 dark:text-white">
       {isHomePage ? (

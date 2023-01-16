@@ -6,7 +6,7 @@ export default function FilmCasts({ casts }) {
   return (
     <div className="w-full mb-10 text-zinc-900 dark:text-white">
       <h3 className="mb-2 md:text-lg">Top Billed Cast</h3>
-      <ul className="relative flex overflow-x-auto text-xs md:text-sm gap-x-6">
+      <ul className="relative flex overflow-x-auto text-xs md:text-sm gap-x-6 touch-pan-y y-scroll">
         {renderCasts(casts)}
       </ul>
     </div>
@@ -14,7 +14,7 @@ export default function FilmCasts({ casts }) {
 }
 
 function renderCasts(arr) {
-  if (arr.length !== 0) {
+  if (Array.isArray(arr) && arr.length !== 0) {
     return arr.map((cast) => {
       return (
         <li
@@ -27,11 +27,11 @@ function renderCasts(arr) {
               src={
                 cast.profile_path
                   ? `${TMDB_IMAGE_ENDPOINT}/${cast.profile_path}`
-                  : 'https://via.placeholder.com/150x224'
+                  : 'https://via.placeholder.com/150x225'
               }
               alt={cast.name}
               width={150}
-              height={224}
+              height={225}
               placeholder="blur"
               blurDataURL={`data:image/svg+xml;base64,${toBase64(
                 shimmer(350, 530)

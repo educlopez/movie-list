@@ -1,7 +1,7 @@
 import { createContext, Fragment, useContext } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { motion } from 'framer-motion'
-import create from 'zustand'
+import { create } from 'zustand'
 
 import { Header } from '@/components/Header'
 import { Navigation } from '@/components/Navigation'
@@ -56,7 +56,7 @@ export function MobileNavigation() {
     <IsInsideMobileNavigationContext.Provider value={true}>
       <button
         type="button"
-        className="flex h-6 w-6 items-center justify-center rounded-md transition hover:bg-zinc-900/5 dark:hover:bg-white/5"
+        className="flex items-center justify-center w-6 h-6 transition rounded-md hover:bg-zinc-900/5 dark:hover:bg-white/5"
         aria-label="Toggle navigation"
         onClick={toggle}
       >

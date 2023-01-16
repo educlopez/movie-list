@@ -1,18 +1,21 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+
 import FilmCasts from '@/components/FilmCasts';
-import FilmRating from '@/components/FilmRating';
 import FilmGenres from '@/components/FilmGenres';
 import FilmHeading from '@/components/FilmHeading';
 import FilmImage from '@/components/FilmImage';
 import FilmInfo from '@/components/FilmInfo';
 import FilmSynopsis from '@/components/FilmSynopsis';
 import Loading from '@/components/Loading';
+
 import { fetcher } from '@/utils';
+
 export default function Movie() {
   const router = useRouter();
   const { id } = router.query;
+
   const { data: movie, error: movieError } = useSWR(
     `/api/movie/${id}`,
     fetcher
@@ -24,7 +27,7 @@ export default function Movie() {
   return (
     <>
       <Head>
-        <title>{movie.detail.title} | </title>
+        <title>{movie.detail.title} - Movielist </title>
       </Head>
       {movie ? (
         <>
@@ -39,7 +42,6 @@ export default function Movie() {
                 tagline={movie.detail.tagline}
                 title={movie.detail.title}
               />
-              <FilmRating number={renderRating(movie.detail.vote_average)} />
               <FilmInfo
                 media_type="movie"
                 language={renderLanguage(movie.detail.spoken_languages || [])}
@@ -62,17 +64,12 @@ export default function Movie() {
   );
 }
 
-export function renderRating(rating) {
-  if (rating !== undefined) {
-    return (rating / 2).toFixed(1);
-  } else {
-    return 0;
-  }
-}
-
 function renderLength(runtime) {
   if (runtime !== 0 && runtime !== undefined) {
-    return runtime + ' min.';
+    const hours = Math.floor(runtime / 60);
+    const minutes = runtime % 60;
+    if (hours < 1) return `${minutes}min`;
+    return `${hours}h ${minutes}min`;
   } else {
     return 'N/A';
   }
