@@ -6,15 +6,6 @@ export default function Heading({ href, isHomePage, media_type, title }) {
       {isHomePage ? (
         <div className="flex items-end">
           <h2 className="py-px section-title sm:py-0">{title}</h2>
-          <p
-            className={
-              media_type === 'movie'
-                ? 'ml-2 rounded-md border-2 py-px px-2 text-[8px] font-medium uppercase tracking-wider text-app-pure-white sm:ml-4 sm:text-[10px]'
-                : 'ml-2 rounded-md border-2 border-app-pure-white bg-app-pure-white py-px px-2 text-[8px] font-medium uppercase tracking-wider text-app-dark-blue sm:ml-4 sm:text-[10px] '
-            }
-          >
-            {media_type}
-          </p>
         </div>
       ) : (
         <h2 className="section-title">{title}</h2>

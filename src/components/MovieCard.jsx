@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { FilmIcon, MonitorIcon } from '@iconicicons/react';
-
+import { motion } from 'framer-motion';
+import { FADE_IN_ANIMATION_CARD_HOVER } from '@/lib/constants';
 export default function MovieCard({ id, category, rating, src, title, year }) {
   const router = useRouter();
 
@@ -14,8 +15,11 @@ export default function MovieCard({ id, category, rating, src, title, year }) {
   };
 
   return (
-    <li className="relative flex flex-col items-start group ">
-      <div onClick={handleClick} className="transition group-hover:scale-110">
+    <motion.li
+      className="relative flex flex-col items-start cursor-pointer group"
+      {...FADE_IN_ANIMATION_CARD_HOVER}
+    >
+      <div onClick={handleClick}>
         <Image
           src={src}
           alt={title}
@@ -29,14 +33,14 @@ export default function MovieCard({ id, category, rating, src, title, year }) {
         <p className="mt-1 text-center dark:text-zinc-400 text-zinc-600">
           {renderYear(year)}
         </p>
-        <p className="flex mt-1 text-center dark:text-zinc-400 text-zinc-600">
+        <p className="flex justify-center mt-1 dark:text-zinc-400 text-zinc-600">
           {renderCategoryIcon(category)}
           <span className="pl-[6px] pr-[6px]">
             {renderCategoryText(category)}
           </span>
         </p>
       </div>
-    </li>
+    </motion.li>
   );
 }
 
@@ -60,7 +64,7 @@ function renderCategoryText(category) {
   if (category === 'movie') {
     return 'Movie';
   } else {
-    return 'TV Series';
+    return 'TV Shows';
   }
 }
 

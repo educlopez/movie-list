@@ -14,12 +14,14 @@ function useInitialValue(value, condition = true) {
   return condition ? initialValue : value;
 }
 
-function TopLevelNavItem({ href, children }) {
+function TopLevelNavItem({ href, children, target, rel }) {
   return (
     <li className="md:hidden">
       <Link
         href={href}
         className="block py-1 text-sm transition text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        target={target}
+        rel={rel}
       >
         {children}
       </Link>
@@ -100,14 +102,19 @@ export function Navigation(props) {
   return (
     <nav {...props}>
       <ul role="list">
-        <TopLevelNavItem href="#">Link</TopLevelNavItem>
-        <TopLevelNavItem href="#">Link</TopLevelNavItem>
-        <TopLevelNavItem href="#">Link</TopLevelNavItem>
-        <li className="sticky bottom-0 z-10 mt-6 min-[416px]:hidden">
+        <TopLevelNavItem href="/">Home</TopLevelNavItem>
+        <TopLevelNavItem
+          href="https://github.com/educlopez/movie-list"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+        </TopLevelNavItem>
+        {/*<li className="sticky bottom-0 z-10 mt-6 min-[416px]:hidden">
           <Button href="#" variant="filled" className="w-full">
             Sign in
-          </Button>
-        </li>
+        </Button>
+        </li>*/}
       </ul>
     </nav>
   );

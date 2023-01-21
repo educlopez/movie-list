@@ -32,7 +32,7 @@ export function getTvCasts(id) {
   return `${TMDB_ENDPOINT}/tv/${id}/credits?api_key=${API_KEY}`;
 }
 
-// Search for movies and tv series
+// Search for movies and TV Shows
 export function search(query, page) {
   return `${TMDB_ENDPOINT}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(
     query
@@ -46,7 +46,7 @@ export function searchMovie(query, page) {
   )}&page=${page}`;
 }
 
-// Search for tv series only
+// Search for TV Shows only
 export function searchTv(query, page) {
   return `${TMDB_ENDPOINT}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(
     query

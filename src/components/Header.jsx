@@ -15,11 +15,13 @@ import { MobileSearch, Search } from '@/components/Search';
 
 import { pathToSearchAll } from '@/utils';
 
-function TopLevelNavItem({ href, children }) {
+function TopLevelNavItem({ href, children, target, rel }) {
   return (
     <li>
       <Link
         href={href}
+        target={target}
+        rel={rel}
         className="text-sm leading-5 transition text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
       >
         {children}
@@ -72,9 +74,14 @@ export const Header = forwardRef(function Header({ className }, ref) {
       <div className="flex items-center gap-5">
         <nav className="hidden md:block">
           <ul role="list" className="flex items-center gap-8">
-            <TopLevelNavItem href="#">Link</TopLevelNavItem>
-            <TopLevelNavItem href="#">Link</TopLevelNavItem>
-            <TopLevelNavItem href="#">Link</TopLevelNavItem>
+            <TopLevelNavItem href="/">Home</TopLevelNavItem>
+            <TopLevelNavItem
+              href="https://github.com/educlopez/movie-list"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Github
+            </TopLevelNavItem>
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
@@ -82,9 +89,9 @@ export const Header = forwardRef(function Header({ className }, ref) {
           <MobileSearch searchPath={pathToSearchAll} />
           <ModeToggle />
         </div>
-        <div className="hidden min-[416px]:contents">
+        {/*<div className="hidden min-[416px]:contents">
           <Button href="#">Sign in</Button>
-        </div>
+        </div>*/}
       </div>
     </motion.div>
   );

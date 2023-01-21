@@ -102,7 +102,7 @@ function SearchDialog({
   open,
   setOpen,
   className,
-  placeholder = 'Search for movies or TV series',
+  placeholder = 'Search for Movies or TV Shows',
   searchPath
 }) {
   let router = useRouter();
