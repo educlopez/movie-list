@@ -1,4 +1,4 @@
-import { LinkIcon, WorldIcon } from '@iconicicons/react';
+import { LinkIcon, WorldIcon } from '@iconicicons/react'
 
 export default function FilmResources({ website, imdb, trailer }) {
   return (
@@ -32,5 +32,5 @@ export default function FilmResources({ website, imdb, trailer }) {
 
       </a> */}
     </div>
-  );
+  )
 }

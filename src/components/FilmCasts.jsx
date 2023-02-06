@@ -1,6 +1,6 @@
-import React from 'react';
-import Image from 'next/image';
-import { shimmer, TMDB_IMAGE_ENDPOINT, toBase64 } from '@/utils';
+import React from 'react'
+import Image from 'next/image'
+import { TMDB_IMAGE_ENDPOINT, shimmer, toBase64 } from '@/utils'
 
 export default function FilmCasts({ casts }) {
   return (
@@ -10,7 +10,7 @@ export default function FilmCasts({ casts }) {
         {renderCasts(casts)}
       </ul>
     </div>
-  );
+  )
 }
 
 function renderCasts(arr) {
@@ -44,9 +44,9 @@ function renderCasts(arr) {
             </span>
           </div>
         </li>
-      );
-    });
+      )
+    })
   } else {
-    return 'N/A';
+    return 'N/A'
   }
 }

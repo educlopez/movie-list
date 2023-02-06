@@ -8,5 +8,5 @@ export default function FilmHeading({ tagline, title }) {
         {tagline}
       </h2>
     </div>
-  );
+  )
 }

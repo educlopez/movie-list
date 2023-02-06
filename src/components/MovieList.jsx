@@ -1,8 +1,9 @@
-import useSWR from 'swr';
-import { fetcher, renderResults, sliceArray } from '@/utils';
-import MovieCard from '@/components/MovieCard';
-import Heading from '@/components/Heading';
-import Loading from '@/components/Loading';
+import { fetcher, renderResults, sliceArray } from '@/utils'
+import useSWR from 'swr'
+
+import Heading from '@/components/Heading'
+import Loading from '@/components/Loading'
+import MovieCard from '@/components/MovieCard'
 
 export default function MovieList({
   Component = MovieCard,
@@ -13,11 +14,11 @@ export default function MovieList({
   limit = 8,
   media_type = 'movie',
   title,
-  type = 'movie'
+  type = 'movie',
 }) {
-  const { data, error } = useSWR(endpoint, fetcher);
+  const { data, error } = useSWR(endpoint, fetcher)
 
-  if (error) return <div>Error occurred</div>;
+  if (error) return <div>Error occurred</div>
 
   return (
     <>
@@ -48,5 +49,5 @@ export default function MovieList({
         <Loading />
       )}
     </>
-  );
+  )
 }

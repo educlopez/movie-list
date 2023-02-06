@@ -12,9 +12,15 @@
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
     "@headlessui/react": "^1.7.7",
+    "@ianvs/prettier-plugin-sort-imports": "^3.7.1",
     "@iconicicons/react": "^1.5.1",
     "@next/font": "13.1.1",
+    "@supabase/auth-helpers-nextjs": "^0.5.4",
+    "@supabase/auth-helpers-react": "^0.3.1",
+    "@supabase/auth-ui-react": "^0.2.6",
+    "@supabase/supabase-js": "^2.7.0",
     "@tailwindcss/typography": "^0.5.4",
+    "@vercel/analytics": "^0.1.8",
     "@vercel/og": "^0.0.20",
     "autoprefixer": "^10.4.12",
     "clsx": "^1.2.1",
@@ -36,11 +42,5 @@
     "eslint-config-next": "13.0.2",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.11"
-  },
-  "prettier": {
-    "arrowParens": "always",
-    "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "none"
   }
 }

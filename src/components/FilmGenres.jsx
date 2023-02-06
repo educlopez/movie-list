@@ -6,7 +6,7 @@ export default function FilmGenres({ genres }) {
         {renderGenres(genres)}
       </ul>
     </div>
-  );
+  )
 }
 
 function renderGenres(arr) {
@@ -19,9 +19,9 @@ function renderGenres(arr) {
         >
           {genre.name}
         </li>
-      );
-    });
+      )
+    })
   } else {
-    return 'N/A';
+    return 'N/A'
   }
 }

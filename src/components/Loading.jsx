@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
-    <div className='my-8 flex items-center justify-center'>
-      <div className='loader'></div>
+    <div className="flex items-center justify-center my-8">
+      <div className="loader"></div>
     </div>
   )
 }

@@ -1,18 +1,20 @@
-import { useRouter } from 'next/router';
-import Image from 'next/image';
-import { FilmIcon, MonitorIcon } from '@iconicicons/react';
-import { motion } from 'framer-motion';
-import { FADE_IN_ANIMATION_CARD_HOVER } from '@/lib/constants';
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { FilmIcon, MonitorIcon } from '@iconicicons/react'
+import { motion } from 'framer-motion'
+
+import { FADE_IN_ANIMATION_CARD_HOVER } from '@/lib/constants'
+
 export default function MovieCard({ id, category, rating, src, title, year }) {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleClick = () => {
     if (category === 'movie') {
-      router.push(`/movie/${id}`);
+      router.push(`/movie/${id}`)
     } else if (category === 'tv') {
-      router.push(`/tv/${id}`);
+      router.push(`/tv/${id}`)
     }
-  };
+  }
 
   return (
     <motion.li
@@ -41,37 +43,37 @@ export default function MovieCard({ id, category, rating, src, title, year }) {
         </p>
       </div>
     </motion.li>
-  );
+  )
 }
 
 function renderYear(year) {
   if (!year) {
-    return 'N/A';
+    return 'N/A'
   } else {
-    return year.substring(0, 4);
+    return year.substring(0, 4)
   }
 }
 
 function renderCategoryIcon(category) {
   if (category === 'movie') {
-    return <FilmIcon className="pl-1 text-base" />;
+    return <FilmIcon className="pl-1 text-base" />
   } else {
-    return <MonitorIcon className="pl-1 text-base" />;
+    return <MonitorIcon className="pl-1 text-base" />
   }
 }
 
 function renderCategoryText(category) {
   if (category === 'movie') {
-    return 'Movie';
+    return 'Movie'
   } else {
-    return 'TV Shows';
+    return 'TV Shows'
   }
 }
 
 function renderRating(rating) {
   if (rating === true) {
-    return '18+';
+    return '18+'
   } else {
-    return 'E';
+    return 'E'
   }
 }

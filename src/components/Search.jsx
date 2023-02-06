@@ -1,15 +1,9 @@
-import {
-  forwardRef,
-  Fragment,
-  useEffect,
-  useId,
-  useRef,
-  useState
-} from 'react';
-import { useRouter } from 'next/router';
-import { Dialog, Transition } from '@headlessui/react';
-import clsx from 'clsx';
-import { pathToSearchAll } from '@/utils';
+import { Fragment, forwardRef, useEffect, useId, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
+import { pathToSearchAll } from '@/utils'
+import { Dialog, Transition } from '@headlessui/react'
+import clsx from 'clsx'
+
 function SearchIcon(props) {
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
@@ -19,7 +13,7 @@ function SearchIcon(props) {
         d="M12.01 12a4.25 4.25 0 1 0-6.02-6 4.25 4.25 0 0 0 6.02 6Zm0 0 3.24 3.25"
       />
     </svg>
-  );
+  )
 }
 
 function NoResultsIcon(props) {
@@ -31,11 +25,11 @@ function NoResultsIcon(props) {
         d="M12.01 12a4.237 4.237 0 0 0 1.24-3c0-.62-.132-1.207-.37-1.738M12.01 12A4.237 4.237 0 0 1 9 13.25c-.635 0-1.237-.14-1.777-.388M12.01 12l3.24 3.25m-3.715-9.661a4.25 4.25 0 0 0-5.975 5.908M4.5 15.5l11-11"
       />
     </svg>
-  );
+  )
 }
 
 function LoadingIcon(props) {
-  let id = useId();
+  let id = useId()
 
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
@@ -60,17 +54,17 @@ function LoadingIcon(props) {
         </linearGradient>
       </defs>
     </svg>
-  );
+  )
 }
 
 function SearchButton(props) {
-  let [modifierKey, setModifierKey] = useState();
+  let [modifierKey, setModifierKey] = useState()
 
   useEffect(() => {
     setModifierKey(
       /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? '⌘' : 'Ctrl '
-    );
-  }, []);
+    )
+  }, [])
 
   return (
     <>
@@ -95,66 +89,67 @@ function SearchButton(props) {
         <SearchIcon className="w-5 h-5 stroke-zinc-900 dark:stroke-white" />
       </button>
     </>
-  );
+  )
 }
 
 function SearchDialog({
+  onClose,
   open,
   setOpen,
   className,
   placeholder = 'Search for Movies or TV Shows',
-  searchPath
+  searchPath,
 }) {
-  let router = useRouter();
-  let formRef = useRef();
-  let inputRef = useRef();
-  const [query, setQuery] = useState('');
+  let router = useRouter()
+  let formRef = useRef()
+  let inputRef = useRef()
+  const [query, setQuery] = useState('')
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (query.length === 0) {
-      return;
+      return
     } else {
-      router.push(`${searchPath}${query.trim()}?page=1`);
-      setQuery('');
+      router.push(`${searchPath}${query.trim()}?page=1`)
+      setQuery('')
     }
-  };
+  }
   useEffect(() => {
     if (!open) {
-      return;
+      return
     }
 
     function onRouteChange() {
-      setOpen(false);
+      setOpen(false)
     }
 
-    router.events.on('routeChangeStart', onRouteChange);
-    router.events.on('hashChangeStart', onRouteChange);
+    router.events.on('routeChangeStart', onRouteChange)
+    router.events.on('hashChangeStart', onRouteChange)
 
     return () => {
-      router.events.off('routeChangeStart', onRouteChange);
-      router.events.off('hashChangeStart', onRouteChange);
-    };
-  }, [open, setOpen, router]);
+      router.events.off('routeChangeStart', onRouteChange)
+      router.events.off('hashChangeStart', onRouteChange)
+    }
+  }, [open, setOpen, router])
 
   useEffect(() => {
     if (open) {
-      return;
+      return
     }
 
     function onKeyDown(event) {
       if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
-        event.preventDefault();
-        setOpen(true);
+        event.preventDefault()
+        setOpen(true)
       }
     }
 
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown)
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [open, setOpen]);
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open, setOpen])
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -198,11 +193,6 @@ function SearchDialog({
                       className={clsx(
                         'flex-auto appearance-none bg-transparent pl-10 text-zinc-900 outline-none placeholder:text-zinc-500 focus:w-full focus:flex-none dark:text-white sm:text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden'
                       )}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Escape') {
-                          onClose();
-                        }
-                      }}
                     />
                   </div>
                 </form>
@@ -212,41 +202,41 @@ function SearchDialog({
         </div>
       </Dialog>
     </Transition.Root>
-  );
+  )
 }
 
 function useSearchProps() {
-  let buttonRef = useRef();
-  let [open, setOpen] = useState(false);
+  let buttonRef = useRef()
+  let [open, setOpen] = useState(false)
 
   return {
     buttonProps: {
       ref: buttonRef,
       onClick() {
-        setOpen(true);
-      }
+        setOpen(true)
+      },
     },
     dialogProps: {
       open,
       setOpen(open) {
-        let { width, height } = buttonRef.current.getBoundingClientRect();
+        let { width, height } = buttonRef.current.getBoundingClientRect()
         if (!open || (width !== 0 && height !== 0)) {
-          setOpen(open);
+          setOpen(open)
         }
-      }
-    }
-  };
+      },
+    },
+  }
 }
 
 export function Search() {
-  let [modifierKey, setModifierKey] = useState();
-  let { buttonProps, dialogProps } = useSearchProps();
+  let [modifierKey, setModifierKey] = useState()
+  let { buttonProps, dialogProps } = useSearchProps()
 
   useEffect(() => {
     setModifierKey(
       /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? '⌘' : 'Ctrl '
-    );
-  }, []);
+    )
+  }, [])
 
   return (
     <div className="hidden lg:block lg:max-w-md lg:flex-auto">
@@ -268,11 +258,11 @@ export function Search() {
         searchPath={pathToSearchAll}
       />
     </div>
-  );
+  )
 }
 
 export function MobileSearch() {
-  let { buttonProps, dialogProps } = useSearchProps();
+  let { buttonProps, dialogProps } = useSearchProps()
 
   return (
     <div className="contents lg:hidden">
@@ -286,5 +276,5 @@ export function MobileSearch() {
       </button>
       <SearchDialog className="lg:hidden" {...dialogProps} />
     </div>
-  );
+  )
 }

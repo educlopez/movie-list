@@ -1,6 +1,7 @@
-import useSWR from 'swr';
-import { fetcher, renderResults, sliceArray } from '@/utils';
-import MovieCard from '@/components/MovieCard';
+import { fetcher, renderResults, sliceArray } from '@/utils'
+import useSWR from 'swr'
+
+import MovieCard from '@/components/MovieCard'
 
 export default function MovieList({
   arr = [],
@@ -8,7 +9,7 @@ export default function MovieList({
   limit = 20,
   media_type = 'movie',
   searchTerm = '',
-  totalResult = 0
+  totalResult = 0,
 }) {
   return (
     <>
@@ -21,5 +22,5 @@ export default function MovieList({
         </ul>
       </div>
     </>
-  );
+  )
 }

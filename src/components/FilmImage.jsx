@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import { shimmer, TMDB_IMAGE_ENDPOINT, toBase64 } from '@/utils';
+import Image from 'next/image'
+import { TMDB_IMAGE_ENDPOINT, shimmer, toBase64 } from '@/utils'
 
 export default function FilmImage({ src, title }) {
   return (
@@ -15,5 +15,5 @@ export default function FilmImage({ src, title }) {
         unoptimized
       />
     </section>
-  );
+  )
 }

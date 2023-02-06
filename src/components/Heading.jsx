@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 export default function Heading({ href, isHomePage, media_type, title }) {
   return (
@@ -16,5 +16,5 @@ export default function Heading({ href, isHomePage, media_type, title }) {
         </div>
       </Link>
     </div>
-  );
+  )
 }

@@ -1,45 +1,57 @@
-import { useEffect, useRef } from 'react';
-import { Layout } from '@/components/Layout';
-import '@/styles/tailwind.css';
-import 'focus-visible';
-import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
+
+import { Layout } from '@/components/Layout'
+import '@/styles/tailwind.css'
+import 'focus-visible'
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { SessionContextProvider } from '@supabase/auth-helpers-react'
+import { motion } from 'framer-motion'
+
 function usePrevious(value) {
-  let ref = useRef();
+  let ref = useRef()
 
   useEffect(() => {
-    ref.current = value;
-  }, [value]);
+    ref.current = value
+  }, [value])
 
-  return ref.current;
+  return ref.current
 }
 
 export default function App({ Component, pageProps, router }) {
-  let previousPathname = usePrevious(router.pathname);
+  let previousPathname = usePrevious(router.pathname)
+  const [supabase] = useState(() => createBrowserSupabaseClient())
 
   return (
     <>
-      <motion.div
-        initial="hidden"
-        whileInView="show"
-        animate="show"
-        viewport={{ once: true }}
-        variants={{
-          hidden: {},
-          show: {
-            transition: {
-              staggerChildren: 0.15
-            }
-          }
-        }}
+      <SessionContextProvider
+        supabaseClient={supabase}
+        initialSession={pageProps.initialSession}
       >
-        <div className="relative">
-          <main>
-            <Layout {...pageProps}>
-              <Component previousPathname={previousPathname} {...pageProps} />
-            </Layout>
-          </main>
-        </div>
-      </motion.div>
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          animate="show"
+          viewport={{ once: true }}
+          variants={{
+            hidden: {},
+            show: {
+              transition: {
+                staggerChildren: 0.15,
+              },
+            },
+          }}
+        >
+          <div className="relative">
+            <main>
+              <Layout {...pageProps}>
+                <Component previousPathname={previousPathname} {...pageProps} />
+                <Analytics />
+              </Layout>
+            </main>
+          </div>
+        </motion.div>
+      </SessionContextProvider>
     </>
-  );
+  )
 }

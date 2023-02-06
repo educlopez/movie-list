@@ -6,7 +6,7 @@ export default function FilmInfo({
   media_type,
   status,
   year,
-  id
+  id,
 }) {
   return (
     <>
@@ -50,5 +50,5 @@ export default function FilmInfo({
         </div>
       )}
     </>
-  );
+  )
 }

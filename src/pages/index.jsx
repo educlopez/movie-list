@@ -1,17 +1,18 @@
-import Head from 'next/head';
-import MovieList from '@/components/MovieList';
-import { Tab } from '@headlessui/react';
-import clsx from 'clsx';
-import { FilmIcon, MonitorIcon } from '@iconicicons/react';
-import { motion } from 'framer-motion';
-import { FADE_DOWN_ANIMATION_VARIANTS } from '@/lib/constants';
+import Head from 'next/head'
+import { Tab } from '@headlessui/react'
+import { FilmIcon, MonitorIcon } from '@iconicicons/react'
+import clsx from 'clsx'
+import { motion } from 'framer-motion'
+
+import { FADE_DOWN_ANIMATION_VARIANTS } from '@/lib/constants'
+import MovieList from '@/components/MovieList'
 
 export default function Home() {
-  const limitNormal = 10;
+  const limitNormal = 10
   const tabs = [
     { name: 'Movies', href: '#', icon: FilmIcon, current: true },
-    { name: 'TV Shows', href: '#', icon: MonitorIcon, current: false }
-  ];
+    { name: 'TV Shows', href: '#', icon: MonitorIcon, current: false },
+  ]
   return (
     <>
       <Head>
@@ -118,5 +119,5 @@ export default function Home() {
         )}
       </Tab.Group>
     </>
-  );
+  )
 }

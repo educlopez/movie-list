@@ -1,4 +1,4 @@
-import { TMDB_VIDEO_ENDPOINT, API_KEY } from '@/utils';
+import { API_KEY, TMDB_VIDEO_ENDPOINT } from '@/utils'
 
 export default function FilmTrailer({ src }) {
   return (
@@ -10,5 +10,5 @@ export default function FilmTrailer({ src }) {
         Trailer
       </a>
     </section>
-  );
+  )
 }
