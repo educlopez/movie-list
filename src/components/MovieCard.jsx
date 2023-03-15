@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 
 import { FADE_IN_ANIMATION_CARD_HOVER } from '@/lib/constants'
 
-export default function MovieCard({ id, category, rating, src, title, year }) {
+export default function MovieCard({ id, category, src, title, year }) {
   const router = useRouter()
 
   const handleClick = () => {
@@ -25,9 +25,10 @@ export default function MovieCard({ id, category, rating, src, title, year }) {
         <Image
           src={src}
           alt={title}
-          width={300}
-          height={450}
+          width={154}
+          height={230}
           className="w-full rounded-md"
+          unoptimized
         />
         <p className="mt-1 text-center dark:text-zinc-400 text-zinc-600">
           {title}

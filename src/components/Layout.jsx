@@ -12,12 +12,16 @@ export function Layout({ children, sections = [] }) {
       <div className="relative overflow-hidden">
         <Image
           src={bgRayLight}
+          width={1810}
+          height={502}
           alt="Background ray for light mode"
           className="absolute top-0 left-1/2 -ml-[39rem] w-[113.125rem] max-w-none dark:hidden"
           priority
         />
         <Image
           src={bgRayDark}
+          width={1810}
+          height={502}
           alt="Background ray for dark mode"
           className="absolute hidden top-0 left-1/2 -ml-[39rem] w-[113.125rem] max-w-none dark:block"
           priority
