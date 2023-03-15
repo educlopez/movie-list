@@ -26,7 +26,7 @@ function renderCasts(arr) {
               className="rounded-lg"
               src={
                 cast.profile_path
-                  ? `${TMDB_IMAGE_ENDPOINT}/${cast.profile_path}`
+                  ? `${TMDB_IMAGE_ENDPOINT}${cast.profile_path}`
                   : 'https://via.placeholder.com/150x225'
               }
               alt={cast.name}

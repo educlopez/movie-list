@@ -1,14 +1,15 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid'
 
-export const TMDB_ENDPOINT = process.env.TMDB_ENDPOINT;
-export const API_KEY = process.env.TMDB_API_KEY;
-export const TMDB_IMAGE_ENDPOINT = 'https://image.tmdb.org/t/p/original';
+export const TMDB_ENDPOINT = process.env.TMDB_ENDPOINT
+export const API_KEY = process.env.TMDB_API_KEY
+export const TMDB_IMAGE_THUMB_ENDPOINT = 'https://image.tmdb.org/t/p/w154'
+export const TMDB_IMAGE_ENDPOINT = 'https://image.tmdb.org/t/p/w342'
 
-export const pathToSearchAll = '/search/';
-export const pathToSearchMovie = '/search/movie/';
-export const pathToSearchTV = '/search/tv/';
+export const pathToSearchAll = '/search/'
+export const pathToSearchMovie = '/search/movie/'
+export const pathToSearchTV = '/search/tv/'
 
-export const fetcher = (url) => fetch(url).then((res) => res.json());
+export const fetcher = (url) => fetch(url).then((res) => res.json())
 
 export const shimmer = (w, h) => `
 <svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -23,12 +24,12 @@ export const shimmer = (w, h) => `
   <rect id="r" width="${w}" height="${h}" fill="url(#g)" />
   <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1s" repeatCount="indefinite"  />
 </svg>
-`;
+`
 
 export const toBase64 = (str) =>
   typeof window === 'undefined'
     ? Buffer.from(str).toString('base64')
-    : window.btoa(str);
+    : window.btoa(str)
 
 export const renderResults = (array, Component, media_type) => {
   return array.map((item) => (
@@ -39,17 +40,17 @@ export const renderResults = (array, Component, media_type) => {
       rating={item.adult}
       src={
         item.poster_path
-          ? `${TMDB_IMAGE_ENDPOINT}/${item.poster_path}`
-          : `${TMDB_IMAGE_ENDPOINT}/${item.backdrop_path}`
+          ? `${TMDB_IMAGE_THUMB_ENDPOINT}${item.poster_path}`
+          : `${TMDB_IMAGE_THUMB_ENDPOINT}${item.backdrop_path}`
       }
       title={
         item.title ? item.title : item.original_name || item.original_title
       }
       year={item.release_date || item.first_air_date}
     />
-  ));
-};
+  ))
+}
 
 export const sliceArray = (arr, limit) => {
-  return arr.slice(0, limit);
-};
+  return arr.slice(0, limit)
+}

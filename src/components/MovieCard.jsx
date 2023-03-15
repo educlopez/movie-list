@@ -26,7 +26,7 @@ export default function MovieCard({ id, category, src, title, year }) {
           src={src}
           alt={title}
           width={154}
-          height={230}
+          height={231}
           className="w-full rounded-md"
           unoptimized
         />
