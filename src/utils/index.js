@@ -2,9 +2,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 export const TMDB_ENDPOINT = process.env.TMDB_ENDPOINT
 export const API_KEY = process.env.TMDB_API_KEY
-export const TMDB_IMAGE_THUMB_ENDPOINT = 'https://image.tmdb.org/t/p/w154'
-export const TMDB_IMAGE_ENDPOINT = 'https://image.tmdb.org/t/p/w342'
-
+export const TMDB_IMAGE_THUMB_ENDPOINT =
+  'https://image.tmdb.org/t/p/w440_and_h660_face'
+export const TMDB_IMAGE_ENDPOINT =
+  'https://image.tmdb.org/t/p/w600_and_h900_bestv2'
+export const TMDB_IMAGE_CAST_ENDPOINT =
+  'https://image.tmdb.org/t/p/w276_and_h350_face'
+export const TMDB_IMAGE_MULTIFACES = 'https://image.tmdb.org/t/p/w1280'
 export const pathToSearchAll = '/search/'
 export const pathToSearchMovie = '/search/movie/'
 export const pathToSearchTV = '/search/tv/'
@@ -38,11 +42,7 @@ export const renderResults = (array, Component, media_type) => {
       id={item.id}
       category={item.media_type || media_type}
       rating={item.adult}
-      src={
-        item.poster_path
-          ? `${TMDB_IMAGE_THUMB_ENDPOINT}${item.poster_path}`
-          : `${TMDB_IMAGE_THUMB_ENDPOINT}${item.backdrop_path}`
-      }
+      src={item.poster_path ? `${item.poster_path}` : `${item.backdrop_path}`}
       title={
         item.title ? item.title : item.original_name || item.original_title
       }
@@ -50,7 +50,21 @@ export const renderResults = (array, Component, media_type) => {
     />
   ))
 }
-
+export const renderResultsSlider = (array, Component, media_type) => {
+  return array.map((item) => (
+    <Component
+      key={item.id || uuidv4()}
+      id={item.id}
+      category={item.media_type || media_type}
+      rating={item.adult}
+      src={item.backdrop_path ? `${item.backdrop_path}` : `${item.poster_path}`}
+      title={
+        item.title ? item.title : item.original_name || item.original_title
+      }
+      year={item.release_date || item.first_air_date}
+    />
+  ))
+}
 export const sliceArray = (arr, limit) => {
   return arr.slice(0, limit)
 }

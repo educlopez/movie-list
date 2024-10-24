@@ -6,10 +6,14 @@ export default function FilmImage({ src, title }) {
     <section className="px-20 text-center md:pr-8 md:pl-0 lg:w-2/5">
       <Image
         className="rounded-lg"
-        src={`${TMDB_IMAGE_ENDPOINT}/${src}`}
+        src={
+          src !== null
+            ? `${TMDB_IMAGE_ENDPOINT}${src}`
+            : 'https://via.placeholder.com/150x225'
+        }
         alt={title}
-        width={350}
-        height={525}
+        width={300}
+        height={450}
         placeholder="blur"
         blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(350, 530))}`}
         unoptimized

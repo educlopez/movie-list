@@ -1,6 +1,10 @@
-import React from 'react'
-import Image from 'next/image'
-import { TMDB_IMAGE_ENDPOINT, shimmer, toBase64 } from '@/utils'
+import React from 'react';
+import Image from 'next/image';
+import { TMDB_IMAGE_CAST_ENDPOINT, shimmer, toBase64 } from '@/utils'
+
+
+
+
 
 export default function FilmCasts({ casts }) {
   return (
@@ -26,7 +30,7 @@ function renderCasts(arr) {
               className="rounded-lg"
               src={
                 cast.profile_path
-                  ? `${TMDB_IMAGE_ENDPOINT}${cast.profile_path}`
+                  ? `${TMDB_IMAGE_CAST_ENDPOINT}${cast.profile_path}`
                   : 'https://via.placeholder.com/150x225'
               }
               alt={cast.name}

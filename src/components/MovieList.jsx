@@ -11,7 +11,7 @@ export default function MovieList({
   href,
   isHomePage,
   isTrending,
-  limit = 8,
+  limit = 14,
   media_type = 'movie',
   title,
   type = 'movie',
@@ -26,7 +26,7 @@ export default function MovieList({
         <section
           className={
             isTrending
-              ? 'mb-6 h-full w-full overflow-hidden md:mb-10 lg:overflow-visible'
+              ? 'overflow-hidden mb-6 w-full h-full md:mb-10 lg:overflow-visible'
               : 'mb-6 md:mb-10'
           }
         >
@@ -37,7 +37,7 @@ export default function MovieList({
             isTrending={isTrending}
             media_type={type}
           />
-          <ul className="grid grid-cols-2 gap-x-12 gap-y-16 sm:grid-cols-4 lg:grid-cols-5">
+          <ul className="grid grid-cols-2 gap-x-12 gap-y-16 sm:grid-cols-4 lg:grid-cols-7">
             {renderResults(
               sliceArray(data.results || [], limit),
               Component,

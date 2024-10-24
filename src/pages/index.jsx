@@ -5,10 +5,12 @@ import clsx from 'clsx'
 import { motion } from 'framer-motion'
 
 import { FADE_DOWN_ANIMATION_VARIANTS } from '@/lib/constants'
+import CarouselList from '@/components/CarouselList'
 import MovieList from '@/components/MovieList'
 
 export default function Home() {
-  const limitNormal = 10
+  const limitNormal = 14
+  const limitSlide = 4
   const tabs = [
     { name: 'Movies', href: '#', icon: FilmIcon, current: true },
     { name: 'TV Shows', href: '#', icon: MonitorIcon, current: false },
@@ -40,6 +42,26 @@ export default function Home() {
       >
         Made with Frame Motion, Nextjs and Tailwindcss
       </motion.p>
+      <div className="flex flex-row justify-center gap-10">
+        <div className="flex flex-col w-2/4 h-full">
+          <CarouselList
+            isHomePage
+            endpoint="/api/movie/now/1"
+            href="/movie/now/1"
+            limit={limitSlide}
+            title="Now playing"
+          />
+        </div>
+        <div className="flex flex-col w-2/4 h-full">
+          <CarouselList
+            isHomePage
+            endpoint="/api/tv/airing-today/1"
+            href="/tv/airing-today/1"
+            limit={limitSlide}
+            title="Airing Today"
+          />
+        </div>
+      </div>
       <Tab.Group as="div" defaultIndex={0}>
         {({ selectedIndex }) => (
           <>
@@ -105,11 +127,11 @@ export default function Home() {
                 <motion.div variants={FADE_DOWN_ANIMATION_VARIANTS}>
                   <MovieList
                     isHomePage
-                    endpoint="/api/tv/popular/1"
-                    href="/tv/popular/1"
+                    endpoint="/api/tv/top/1"
+                    href="/tv/top/1"
                     limit={limitNormal}
                     media_type="tv"
-                    title="Popular"
+                    title="Top Rated"
                     type="TV Shows"
                   />
                 </motion.div>

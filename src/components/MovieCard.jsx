@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { TMDB_IMAGE_THUMB_ENDPOINT } from '@/utils'
 import { FilmIcon, MonitorIcon } from '@iconicicons/react'
 import { motion } from 'framer-motion'
 
@@ -18,15 +19,19 @@ export default function MovieCard({ id, category, src, title, year }) {
 
   return (
     <motion.li
-      className="relative flex flex-col items-start cursor-pointer group"
+      className="flex relative flex-col items-start cursor-pointer group"
       {...FADE_IN_ANIMATION_CARD_HOVER}
     >
       <div onClick={handleClick}>
         <Image
-          src={src}
+          src={
+            src !== 'null'
+              ? `${TMDB_IMAGE_THUMB_ENDPOINT}${src}`
+              : 'https://via.placeholder.com/150x225'
+          }
           alt={title}
-          width={154}
-          height={231}
+          width={220}
+          height={330}
           className="w-full rounded-md"
           unoptimized
         />
