@@ -3,16 +3,17 @@ const nextConfig = {
   pageExtensions: ['jsx', 'js'],
   reactStrictMode: true,
   experimental: {
-    scrollRestoration: true
+    scrollRestoration: true,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'image.tmdb.org'
-      }
-    ]
-  }
-};
+        hostname: 'image.tmdb.org',
+      },
+    ],
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

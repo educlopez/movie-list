@@ -4,8 +4,6 @@ import { Analytics } from '@vercel/analytics/react'
 import { Layout } from '@/components/Layout'
 import '@/styles/tailwind.css'
 import 'focus-visible'
-import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
-import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import { motion } from 'framer-motion'
 
 function usePrevious(value) {
@@ -20,38 +18,32 @@ function usePrevious(value) {
 
 export default function App({ Component, pageProps, router }) {
   let previousPathname = usePrevious(router.pathname)
-  const [supabase] = useState(() => createBrowserSupabaseClient())
 
   return (
     <>
-      <SessionContextProvider
-        supabaseClient={supabase}
-        initialSession={pageProps.initialSession}
-      >
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          animate="show"
-          viewport={{ once: true }}
-          variants={{
-            hidden: {},
-            show: {
-              transition: {
-                staggerChildren: 0.15,
-              },
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        animate="show"
+        viewport={{ once: true }}
+        variants={{
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.15,
             },
-          }}
-        >
-          <div className="relative">
-            <main>
-              <Layout {...pageProps}>
-                <Component previousPathname={previousPathname} {...pageProps} />
-                <Analytics />
-              </Layout>
-            </main>
-          </div>
-        </motion.div>
-      </SessionContextProvider>
+          },
+        }}
+      >
+        <div className="relative">
+          <main>
+            <Layout {...pageProps}>
+              <Component previousPathname={previousPathname} {...pageProps} />
+              <Analytics />
+            </Layout>
+          </main>
+        </div>
+      </motion.div>
     </>
   )
 }

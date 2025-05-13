@@ -4,8 +4,6 @@ import { pathToSearchAll } from '@/utils'
 import clsx from 'clsx'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
-import { Button } from '@/components/Button'
-import LogButton from '@/components/LogButton'
 import { Logo } from '@/components/Logo'
 import {
   MobileNavigation,
@@ -65,15 +63,15 @@ export const Header = forwardRef(function Header({ className }, ref) {
         <Logo className="h-6" />
       </Link>
       <Search searchPath={pathToSearchAll} />
-      <div className="flex items-center gap-5 lg:hidden">
+      <div className="flex gap-5 items-center lg:hidden">
         <MobileNavigation />
         <Link href="/" aria-label="Home">
           <Logo className="h-6" />
         </Link>
       </div>
-      <div className="flex items-center gap-5">
+      <div className="flex gap-5 items-center">
         <nav className="hidden md:block">
-          <ul role="list" className="flex items-center gap-8">
+          <ul role="list" className="flex gap-8 items-center">
             <TopLevelNavItem href="/">Home</TopLevelNavItem>
             <TopLevelNavItem
               href="https://github.com/educlopez/movie-list"
@@ -88,9 +86,6 @@ export const Header = forwardRef(function Header({ className }, ref) {
         <div className="flex gap-4">
           <MobileSearch searchPath={pathToSearchAll} />
           <ModeToggle />
-        </div>
-        <div className="hidden min-[416px]:contents">
-          <LogButton />
         </div>
       </div>
     </motion.div>
