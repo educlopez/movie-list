@@ -27,7 +27,7 @@ export default function MovieCard({ id, category, src, title, year }) {
           src={
             src !== 'null'
               ? `${TMDB_IMAGE_THUMB_ENDPOINT}${src}`
-              : 'https://via.placeholder.com/150x225'
+              : 'https://placehold.co/150x225'
           }
           alt={title}
           width={220}

@@ -9,7 +9,7 @@ export default function FilmImage({ src, title }) {
         src={
           src !== null
             ? `${TMDB_IMAGE_ENDPOINT}${src}`
-            : 'https://via.placeholder.com/150x225'
+            : 'https://placehold.co/150x225'
         }
         alt={title}
         width={300}

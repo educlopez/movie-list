@@ -8,9 +8,9 @@ import { TMDB_IMAGE_CAST_ENDPOINT, shimmer, toBase64 } from '@/utils'
 
 export default function FilmCasts({ casts }) {
   return (
-    <div className="w-full mb-10 text-zinc-900 dark:text-white">
+    <div className="mb-10 w-full text-zinc-900 dark:text-white">
       <h3 className="mb-2 md:text-lg">Top Billed Cast</h3>
-      <ul className="relative flex overflow-x-auto text-xs md:text-sm gap-x-6 touch-pan-y y-scroll">
+      <ul className="flex overflow-x-auto relative gap-x-6 text-xs md:text-sm touch-pan-y y-scroll">
         {renderCasts(casts)}
       </ul>
     </div>
@@ -23,15 +23,15 @@ function renderCasts(arr) {
       return (
         <li
           key={cast.credit_id}
-          className="flex-none border rounded-2xl border-zinc-900/10 bg-white/10 backdrop-blur-sm dark:border-white/10 dark:bg-zinc-900/20 dark:backdrop-blur "
+          className="flex-none rounded-2xl border backdrop-blur-sm border-zinc-900/10 bg-white/10 dark:border-white/10 dark:bg-zinc-900/20 dark:backdrop-blur"
         >
-          <div className="flex flex-col items-center justify-center w-full gap-3 pb-2">
+          <div className="flex flex-col gap-3 justify-center items-center pb-2 w-full">
             <Image
               className="rounded-lg"
               src={
                 cast.profile_path
                   ? `${TMDB_IMAGE_CAST_ENDPOINT}${cast.profile_path}`
-                  : 'https://via.placeholder.com/150x225'
+                  : 'https://placehold.co/150x225'
               }
               alt={cast.name}
               width={150}
