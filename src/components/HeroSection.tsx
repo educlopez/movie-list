@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -109,36 +110,50 @@ export default function HeroSection() {
 
         {/* Progress indicators */}
         <div className="mt-6 flex items-center gap-2">
-          {items.map((_, i) => (
-            <button
-              aria-label={`Show trending item ${(i + 1).toString()}`}
-              className={
-                i === activeIndex
-                  ? "relative h-1 w-12 overflow-hidden rounded-full bg-white/20"
-                  : "h-1.5 w-1.5 rounded-full bg-white/30 transition-colors hover:bg-white/60"
-              }
-              key={`bar-${items[i].id.toString()}`}
-              onClick={() => {
-                setActiveIndex(i);
-                if (timerRef.current) {
-                  clearInterval(timerRef.current);
-                }
-              }}
-              type="button"
-            >
-              {i === activeIndex && (
-                <span
-                  className="absolute inset-y-0 left-0 rounded-full bg-emerald-500"
-                  key={`fill-${activeIndex}-${isPaused.toString()}`}
-                  style={{
-                    animation: isPaused
-                      ? "none"
-                      : `progress-fill ${AUTOPLAY_INTERVAL}ms linear forwards`,
-                  }}
-                />
-              )}
-            </button>
-          ))}
+          {items.map((_, i) => {
+            const isActive = i === activeIndex;
+            return (
+              <motion.button
+                animate={{
+                  width: isActive ? 48 : 6,
+                  height: isActive ? 4 : 6,
+                  opacity: isActive ? 1 : 0.5,
+                }}
+                aria-label={`Show trending item ${(i + 1).toString()}`}
+                className="relative overflow-hidden rounded-full bg-white/25"
+                key={`bar-${items[i].id.toString()}`}
+                layout
+                onClick={() => {
+                  setActiveIndex(i);
+                  if (timerRef.current) {
+                    clearInterval(timerRef.current);
+                  }
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                type="button"
+                whileHover={{ opacity: 1 }}
+              >
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.span
+                      animate={{ width: "100%" }}
+                      className="absolute inset-y-0 left-0 rounded-full bg-emerald-500"
+                      exit={{ opacity: 0 }}
+                      initial={{ width: 0 }}
+                      key={`fill-${activeIndex}`}
+                      transition={{
+                        width: {
+                          duration: isPaused ? 0 : AUTOPLAY_INTERVAL / 1000,
+                          ease: "linear",
+                        },
+                        opacity: { duration: 0.2 },
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            );
+          })}
         </div>
       </div>
     </section>
