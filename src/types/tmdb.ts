@@ -181,3 +181,17 @@ export interface DiscoverResponse {
   results: DiscoverItem[];
   total_pages: number;
 }
+
+/** Provider group within a day's results. */
+export interface ProviderResults {
+  items: DiscoverItem[];
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+}
+
+/** Day discover response grouped by platform. */
+export interface DayDiscoverResponse {
+  date: string;
+  providers: ProviderResults[];
+}

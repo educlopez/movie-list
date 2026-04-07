@@ -1,9 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import useSWR from "swr";
-import type { DiscoverItem, DiscoverResponse } from "@/types/tmdb";
-import { fetcher } from "@/utils";
+import { usePreferences } from "@/stores/preferences";
+import type { DayDiscoverResponse } from "@/types/tmdb";
 import CardSkeleton from "./CardSkeleton";
 import FilterBar from "./FilterBar";
 import TimelineGroup from "./TimelineGroup";
@@ -11,91 +10,126 @@ import TimelineGroup from "./TimelineGroup";
 type MediaType = "all" | "movie" | "tv";
 type Mode = "new" | "upcoming";
 
-function groupByDate(items: DiscoverItem[]) {
-  const groups: Record<string, DiscoverItem[]> = {};
+function getDateLabel(dateStr: string): string {
   const today = new Date().toISOString().slice(0, 10);
   const yesterday = new Date(Date.now() - 86_400_000)
     .toISOString()
     .slice(0, 10);
-
-  for (const item of items) {
-    const date = item.release_date?.slice(0, 10) || "Unknown";
-    if (!groups[date]) {
-      groups[date] = [];
-    }
-    groups[date].push(item);
+  if (dateStr === today) {
+    return "Today";
   }
-
-  const sorted = Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
-
-  return sorted.map(([date, dateItems]) => {
-    let label = date;
-    if (date === today) {
-      label = "Today";
-    } else if (date === yesterday) {
-      label = "Yesterday";
-    } else {
-      const d = new Date(date + "T00:00:00");
-      label = d.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    }
-    return { date, label, items: dateItems };
+  if (dateStr === yesterday) {
+    return "Yesterday";
+  }
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
   });
+}
+
+function getDateOffset(baseDate: Date, offset: number): string {
+  const d = new Date(baseDate);
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().slice(0, 10);
 }
 
 export default function NewPageContent() {
   const [mediaType, setMediaType] = useState<MediaType>("all");
   const [mode, setMode] = useState<Mode>("new");
-  const [filters, setFilters] = useState({
-    genre: "",
-    year: "",
-    rating: "",
-  });
-  const [page, setPage] = useState(1);
-  const [allItems, setAllItems] = useState<DiscoverResponse["results"]>([]);
+  const [filters, setFilters] = useState({ genre: "", year: "", rating: "" });
+  const [days, setDays] = useState<DayDiscoverResponse[]>([]);
+  const [dayOffset, setDayOffset] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const { country, platforms } = usePreferences();
 
-  const params = new URLSearchParams({
-    type: mediaType,
-    mode,
-    page: page.toString(),
-    ...(filters.genre && { genre: filters.genre }),
-    ...(filters.year && { year: filters.year }),
-    ...(filters.rating && { rating: filters.rating }),
-  });
+  const fetchDay = useCallback(
+    async (offset: number) => {
+      const date =
+        mode === "new"
+          ? getDateOffset(new Date(), -offset)
+          : getDateOffset(new Date(), offset + 1);
 
-  const { data, error, isLoading } = useSWR<DiscoverResponse>(
-    `/api/discover?${params.toString()}`,
-    fetcher
+      const params = new URLSearchParams({
+        type: mediaType,
+        mode,
+        date,
+        country,
+        ...(platforms.length > 0 && { providers: platforms.join(",") }),
+        ...(filters.genre && { genre: filters.genre }),
+        ...(filters.rating && { rating: filters.rating }),
+      });
+
+      const res = await fetch(`/api/discover?${params.toString()}`);
+      const data: DayDiscoverResponse = await res.json();
+      return data;
+    },
+    [mediaType, mode, country, platforms, filters]
   );
 
+  // Load initial 3 days
   useEffect(() => {
-    if (data?.results) {
-      if (page === 1) {
-        setAllItems(data.results);
-      } else {
-        setAllItems((prev) => [...prev, ...data.results]);
-      }
-      setHasMore(data.page < data.total_pages);
-    }
-  }, [data, page]);
-
-  useEffect(() => {
-    setPage(1);
-    setAllItems([]);
+    let cancelled = false;
+    setDays([]);
+    setDayOffset(0);
     setHasMore(true);
-  }, [mediaType, mode, filters]);
+    setIsLoading(true);
 
-  const loadMore = useCallback(() => {
-    if (!isLoading && hasMore) {
-      setPage((p) => p + 1);
+    (async () => {
+      const results: DayDiscoverResponse[] = [];
+      for (let i = 0; i < 3; i++) {
+        const day = await fetchDay(i);
+        if (cancelled) {
+          return;
+        }
+        if (day.providers.length > 0) {
+          results.push(day);
+        }
+      }
+      setDays(results);
+      setDayOffset(3);
+      setIsLoading(false);
+      if (results.length === 0) {
+        setHasMore(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchDay]);
+
+  const loadMore = useCallback(async () => {
+    if (isLoading || !hasMore) {
+      return;
     }
-  }, [isLoading, hasMore]);
+    setIsLoading(true);
 
+    // Load next day (skip empty days, try up to 5)
+    let found = false;
+    let offset = dayOffset;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const day = await fetchDay(offset);
+      offset++;
+      if (day.providers.length > 0) {
+        setDays((prev) => [...prev, day]);
+        found = true;
+        break;
+      }
+    }
+
+    setDayOffset(offset);
+    if (!found || offset > 30) {
+      setHasMore(false);
+    }
+    setIsLoading(false);
+  }, [isLoading, hasMore, dayOffset, fetchDay]);
+
+  // Infinite scroll
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) {
@@ -113,8 +147,6 @@ export default function NewPageContent() {
     return () => observer.disconnect();
   }, [loadMore]);
 
-  const groups = groupByDate(allItems);
-
   const tabClass = (active: boolean) =>
     `px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
       active
@@ -131,7 +163,6 @@ export default function NewPageContent() {
 
   return (
     <div className="space-y-6">
-      {/* Type tabs */}
       <div className="flex gap-2">
         {(["all", "movie", "tv"] as const).map((t) => (
           <button
@@ -145,7 +176,6 @@ export default function NewPageContent() {
         ))}
       </div>
 
-      {/* Sub-tabs + Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-2">
           <button
@@ -166,43 +196,39 @@ export default function NewPageContent() {
         <FilterBar filters={filters} onFilterChange={setFilters} />
       </div>
 
-      {/* Timeline */}
-      {allItems.length === 0 && isLoading && (
+      {days.length === 0 && isLoading && (
         <div className="space-y-8">
           <CardSkeleton count={8} />
           <CardSkeleton count={8} />
         </div>
       )}
 
-      {error && (
-        <div
-          className="rounded-lg bg-red-50 p-4 text-red-600 text-sm dark:bg-red-900/20 dark:text-red-400"
-          role="alert"
-        >
-          Could not load results. Please try again later.
-        </div>
-      )}
+      {days.map((day, i) => {
+        const totalItems = day.providers.reduce(
+          (sum, pg) => sum + pg.items.length,
+          0
+        );
+        return (
+          <TimelineGroup
+            date={day.date}
+            isLast={i === days.length - 1 && !hasMore}
+            key={day.date}
+            label={getDateLabel(day.date)}
+            providerGroups={day.providers}
+            totalItems={totalItems}
+          />
+        );
+      })}
 
-      {groups.map((group, i) => (
-        <TimelineGroup
-          date={group.date}
-          isLast={i === groups.length - 1 && !hasMore}
-          items={group.items}
-          key={group.date}
-          label={group.label}
-        />
-      ))}
-
-      {allItems.length > 0 && !hasMore && (
-        <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
+      {days.length > 0 && !hasMore && (
+        <p className="pl-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
           No more results
         </p>
       )}
 
-      {/* Infinite scroll sentinel */}
       <div className="h-1" ref={sentinelRef} />
 
-      {isLoading && allItems.length > 0 && (
+      {isLoading && days.length > 0 && (
         <div className="flex justify-center py-4">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
         </div>
