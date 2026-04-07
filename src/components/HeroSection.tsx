@@ -20,17 +20,23 @@ export default function HeroSection() {
     fetcher
   );
 
-  const itemCount = data?.results?.length ? Math.min(data.results.length, 5) : 0;
+  const itemCount = data?.results?.length
+    ? Math.min(data.results.length, 5)
+    : 0;
 
   const goToNext = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % itemCount);
   }, [itemCount]);
 
   useEffect(() => {
-    if (itemCount <= 1 || isPaused) return;
+    if (itemCount <= 1 || isPaused) {
+      return;
+    }
     timerRef.current = setInterval(goToNext, AUTOPLAY_INTERVAL);
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [itemCount, isPaused, goToNext]);
 
@@ -101,23 +107,37 @@ export default function HeroSection() {
           </Link>
         </div>
 
-        {/* Dots */}
-        <div className="mt-6 flex gap-2">
+        {/* Progress indicators */}
+        <div className="mt-6 flex items-center gap-2">
           {items.map((_, i) => (
             <button
               aria-label={`Show trending item ${(i + 1).toString()}`}
-              className={`h-1.5 rounded-full transition-all ${
+              className={
                 i === activeIndex
-                  ? "w-8 bg-emerald-500"
-                  : "w-3 bg-white/30 hover:bg-white/50"
-              }`}
-              key={`dot-${items[i].id.toString()}`}
+                  ? "relative h-1 w-12 overflow-hidden rounded-full bg-white/20"
+                  : "h-1.5 w-1.5 rounded-full bg-white/30 transition-colors hover:bg-white/60"
+              }
+              key={`bar-${items[i].id.toString()}`}
               onClick={() => {
                 setActiveIndex(i);
-                if (timerRef.current) clearInterval(timerRef.current);
+                if (timerRef.current) {
+                  clearInterval(timerRef.current);
+                }
               }}
               type="button"
-            />
+            >
+              {i === activeIndex && (
+                <span
+                  className="absolute inset-y-0 left-0 rounded-full bg-emerald-500"
+                  key={`fill-${activeIndex}-${isPaused.toString()}`}
+                  style={{
+                    animation: isPaused
+                      ? "none"
+                      : `progress-fill ${AUTOPLAY_INTERVAL}ms linear forwards`,
+                  }}
+                />
+              )}
+            </button>
           ))}
         </div>
       </div>

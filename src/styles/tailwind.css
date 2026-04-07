@@ -40,6 +40,16 @@
   display: none;
 }
 
+/* Hero slider progress bar animation */
+@keyframes progress-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 /* Custom horizontal scroll for trending section */
 .y-scroll::-webkit-scrollbar {
   width: 4px;
