@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { FADE_IN_ANIMATION_CARD_HOVER } from "@/lib/constants";
 import { TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
+import RatingBadge from "./RatingBadge";
 
 interface MovieCardProps {
   category: string;
@@ -14,6 +15,7 @@ interface MovieCardProps {
   rating?: boolean;
   src: string;
   title: string;
+  vote_average?: number;
   year?: string;
 }
 
@@ -22,6 +24,7 @@ export default function MovieCard({
   category,
   src,
   title,
+  vote_average,
   year,
 }: MovieCardProps) {
   const router = useRouter();
@@ -40,19 +43,26 @@ export default function MovieCard({
       {...FADE_IN_ANIMATION_CARD_HOVER}
     >
       <div onClick={handleClick}>
-        <Image
-          alt={title}
-          className="w-full rounded-md"
-          height={330}
-          src={
-            src === "null"
-              ? "https://placehold.co/150x225"
-              : `${TMDB_IMAGE_THUMB_ENDPOINT}${src}`
-          }
-          unoptimized
-          width={220}
-        />
-        <p className="mt-1 text-center text-zinc-600 dark:text-zinc-400">
+        <div className="relative">
+          <Image
+            alt={title}
+            className="w-full rounded-md"
+            height={330}
+            src={
+              src === "null"
+                ? "https://placehold.co/150x225"
+                : `${TMDB_IMAGE_THUMB_ENDPOINT}${src}`
+            }
+            unoptimized
+            width={220}
+          />
+          {vote_average !== undefined && (
+            <div className="absolute -top-2 -right-2">
+              <RatingBadge rating={vote_average} />
+            </div>
+          )}
+        </div>
+        <p className="mt-1 line-clamp-2 text-center text-zinc-600 dark:text-zinc-400">
           {title}
         </p>
         <p className="mt-1 text-center text-zinc-600 dark:text-zinc-400">
@@ -87,5 +97,5 @@ function renderCategoryText(category: string): string {
   if (category === "movie") {
     return "Movie";
   }
-  return "TV Shows";
+  return "TV";
 }

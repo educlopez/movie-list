@@ -23,6 +23,7 @@ export interface MediaCardProps {
   rating: boolean;
   src: string;
   title: string;
+  vote_average?: number;
   year: string | undefined;
 }
 
