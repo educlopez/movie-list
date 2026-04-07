@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import useSWR from "swr";
+import { useDragScroll } from "@/hooks/useDragScroll";
 import type { TMDBPaginatedResponse } from "@/types";
 import { fetcher } from "@/utils";
 import CardSkeleton from "./CardSkeleton";
@@ -23,6 +24,7 @@ export default function CardRow({
   hideTitle = false,
 }: CardRowProps) {
   const { data, error } = useSWR<TMDBPaginatedResponse>(endpoint, fetcher);
+  const scrollRef = useDragScroll<HTMLUListElement>();
 
   return (
     <section className="mb-8">
@@ -52,7 +54,10 @@ export default function CardRow({
       {!(data || error) && <CardSkeleton />}
 
       {data && (
-        <ul className="scrollbar-none flex gap-4 overflow-x-auto pt-2 pb-2">
+        <ul
+          className="scrollbar-none flex gap-4 overflow-x-auto pt-2 pb-2"
+          ref={scrollRef}
+        >
           {data.results.slice(0, 14).map((item) => (
             <div className="w-[150px] flex-none" key={item.id}>
               <MovieCard
