@@ -10,10 +10,11 @@ function jwIcon(icon: string): string {
   return `https://images.justwatch.com${icon.replace("{profile}", "s100").replace("{format}", "webp")}`;
 }
 
-const NEW_TITLES_QUERY = `
-query GetNewTitles($country: Country!, $first: Int!, $after: String, $date: Date, $package: String, $filter: TitleFilter) {
-  newTitles(country: $country, first: $first, after: $after, date: $date, package: $package, filter: $filter) {
+const UPCOMING_TITLES_QUERY = `
+query GetUpcoming($country: Country!, $first: Int!, $after: String, $filter: TitleFilter, $sortBy: PopularTitlesSorting!) {
+  popularTitles(country: $country, first: $first, after: $after, filter: $filter, sortBy: $sortBy) {
     totalCount
+    pageInfo { hasNextPage endCursor }
     edges {
       node {
         id
@@ -26,67 +27,55 @@ query GetNewTitles($country: Country!, $first: Int!, $after: String, $date: Date
           posterUrl
           fullPath
           externalIds { imdbId tmdbId }
+          upcomingReleases {
+            releaseDate
+            package { clearName shortName icon packageId }
+          }
         }
         offers(country: $country, platform: WEB) {
           monetizationType
           package { clearName packageId shortName icon }
-          dateCreated
-          retailPrice(language: "es")
-          lastChangeRetailPrice(language: "es")
-          lastChangePercent
-          currency
         }
       }
     }
-    pageInfo { hasNextPage endCursor }
   }
 }`;
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const country = (searchParams.get("country") || "US").toUpperCase();
-  const date =
-    searchParams.get("date") || new Date().toISOString().slice(0, 10);
-  const packages = searchParams.get("packages"); // comma-separated short names like "nfx,dnp"
-  const monetization = searchParams.get("monetization"); // comma-separated: "BUY,RENT"
   const after = searchParams.get("after") || null;
 
-  try {
-    const packageFilter = packages ? packages.split(",")[0] : undefined;
+  const currentYear = new Date().getFullYear();
 
-    // Fetch all pages from JustWatch (max 100 per page)
+  try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let allEdges: Array<Record<string, any>> = [];
     let cursor: string | null = after;
     let totalCount = 0;
-    const maxPages = 5; // Safety limit
+    const maxPages = 5;
 
     for (let page = 0; page < maxPages; page++) {
       const variables: Record<string, unknown> = {
         country,
         first: 100,
-        date,
+        filter: {
+          releaseYear: { min: currentYear },
+        },
+        sortBy: "POPULAR",
       };
       if (cursor) {
         variables.after = cursor;
-      }
-      if (packageFilter) {
-        variables.package = packageFilter;
-      }
-      if (monetization) {
-        variables.filter = {
-          monetizationTypes: monetization.split(","),
-        };
       }
 
       const res = await fetch(JUSTWATCH_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: NEW_TITLES_QUERY, variables }),
+        body: JSON.stringify({ query: UPCOMING_TITLES_QUERY, variables }),
       });
 
       const json = await res.json();
-      const pageData = json.data?.newTitles;
+      const pageData = json.data?.popularTitles;
 
       if (!pageData) {
         if (page === 0) {
@@ -107,7 +96,7 @@ export async function GET(request: NextRequest) {
       cursor = pageData.pageInfo.endCursor;
     }
 
-    // Group by package (platform)
+    // Group by provider — use both upcomingReleases and offers
     const providerMap: Record<
       string,
       {
@@ -126,16 +115,8 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      // Find which packages this was added to on this date
-      const addedOffers = (node.offers || []).filter(
-        (o: Record<string, unknown>) =>
-          (o.dateCreated as string)?.startsWith(date)
-      );
-
-      // Determine media_type from objectType
       const mediaType = node.objectType === "MOVIE" ? "movie" : "tv";
 
-      // Parse tmdbId
       let tmdbId = 0;
       const rawTmdbId = content.externalIds?.tmdbId;
       if (rawTmdbId) {
@@ -148,76 +129,65 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Extract best price info from offers (for deals mode)
-      const buyRentOffers = (node.offers || []).filter(
-        (o: Record<string, unknown>) =>
-          o.monetizationType === "BUY" || o.monetizationType === "RENT"
+      // Determine the release date from upcomingReleases or fallback to year
+      const upcomingReleases = content.upcomingReleases || [];
+      const futureReleases = upcomingReleases.filter(
+        (r: { releaseDate: string }) => r.releaseDate >= new Date().toISOString().slice(0, 10)
       );
-      const bestOffer = buyRentOffers.length > 0
-        ? buyRentOffers.reduce(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (best: any, o: any) => {
-              const pct = o.lastChangePercent ?? 0;
-              return pct < (best.lastChangePercent ?? 0) ? o : best;
-            },
-            buyRentOffers[0]
-          )
-        : null;
 
       const item = {
         id: tmdbId || node.objectId,
         title: content.title || "",
         media_type: mediaType,
         poster_path: content.posterUrl || null,
-        release_date: date,
+        release_date: futureReleases[0]?.releaseDate || `${content.originalReleaseYear}`,
         vote_average: 0,
         year: content.originalReleaseYear || 0,
         genre_ids: [],
         jw_id: node.id,
-        ...(monetization && bestOffer
-          ? {
-              retailPrice: bestOffer.retailPrice,
-              lastChangeRetailPrice: bestOffer.lastChangeRetailPrice,
-              lastChangePercent: bestOffer.lastChangePercent,
-              currency: bestOffer.currency,
-            }
-          : {}),
       };
 
-      // Get unique packages for this item
-      const seenPackages = new Set<string>();
-      for (const offer of addedOffers) {
-        const pkg = offer.package;
-        if (!pkg || seenPackages.has(pkg.shortName)) {
-          continue;
-        }
-        seenPackages.add(pkg.shortName);
+      // Add to providers from upcoming releases
+      if (futureReleases.length > 0) {
+        const seenPackages = new Set<string>();
+        for (const release of futureReleases) {
+          const pkg = release.package;
+          if (!pkg || seenPackages.has(pkg.shortName)) {
+            continue;
+          }
+          seenPackages.add(pkg.shortName);
 
-        const key = pkg.shortName;
-        if (!providerMap[key]) {
-          providerMap[key] = {
-            packageId: pkg.packageId,
-            clearName: pkg.clearName,
-            shortName: pkg.shortName,
-            icon: jwIcon(pkg.icon || ""),
-            items: [],
-          };
-        }
-        // Avoid duplicate items in same provider
-        if (
-          !providerMap[key].items.some(
-            (i: Record<string, unknown>) =>
-              i.id === item.id && i.media_type === item.media_type
-          )
-        ) {
-          providerMap[key].items.push(item);
+          const key = pkg.shortName;
+          if (!providerMap[key]) {
+            providerMap[key] = {
+              packageId: pkg.packageId,
+              clearName: pkg.clearName,
+              shortName: pkg.shortName,
+              icon: jwIcon(pkg.icon || ""),
+              items: [],
+            };
+          }
+          if (
+            !providerMap[key].items.some(
+              (i: Record<string, unknown>) =>
+                i.id === item.id && i.media_type === item.media_type
+            )
+          ) {
+            providerMap[key].items.push({ ...item, release_date: release.releaseDate });
+          }
         }
       }
 
-      // If no offers matched the date filter, add to first available package
-      if (addedOffers.length === 0 && node.offers?.length > 0) {
-        const pkg = node.offers[0].package;
-        if (pkg) {
+      // If no upcoming releases, use existing offers
+      if (futureReleases.length === 0 && node.offers?.length > 0) {
+        const seenPackages = new Set<string>();
+        for (const offer of node.offers) {
+          const pkg = offer.package;
+          if (!pkg || seenPackages.has(pkg.shortName)) {
+            continue;
+          }
+          seenPackages.add(pkg.shortName);
+
           const key = pkg.shortName;
           if (!providerMap[key]) {
             providerMap[key] = {
@@ -240,7 +210,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Enrich items with TMDB data (poster + rating) — batch up to 20 items
+    // Enrich items with TMDB data (poster + rating)
     const allItems = Object.values(providerMap).flatMap((p) => p.items);
     const uniqueItems = new Map<string, Record<string, unknown>>();
     for (const item of allItems) {
@@ -275,7 +245,7 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.items.length - a.items.length);
 
     return NextResponse.json({
-      date,
+      date: new Date().toISOString().slice(0, 10),
       totalCount,
       providers,
       hasNextPage: false,

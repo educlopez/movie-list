@@ -151,6 +151,7 @@ export interface ApiErrorResponse {
 export interface JWPackage {
   clearName: string;
   icon: string;
+  monetizationTypes?: string[];
   packageId: number;
   shortName: string;
 }
@@ -175,6 +176,7 @@ export interface JWDayResponse {
 
 /** JustWatch packages response. */
 export interface JWPackagesResponse {
+  allPackages?: JWPackage[];
   packages: JWPackage[];
 }
 
