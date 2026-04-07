@@ -397,9 +397,9 @@ export function Search() {
   }, []);
 
   return (
-    <div className="hidden lg:block lg:max-w-md lg:flex-auto">
+    <div className="absolute left-1/2 hidden -translate-x-1/2 lg:block">
       <button
-        className="hidden h-8 w-full items-center gap-2 rounded-full bg-white pr-3 pl-2 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 lg:flex dark:bg-white/5 dark:text-zinc-400 dark:ring-white/10 dark:ring-inset dark:hover:ring-white/20 focus:[&:not(:focus-visible)]:outline-none"
+        className="flex h-8 w-56 items-center gap-2 rounded-full bg-white pr-3 pl-2 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 dark:bg-white/5 dark:text-zinc-400 dark:ring-white/10 dark:ring-inset dark:hover:ring-white/20 focus:[&:not(:focus-visible)]:outline-none"
         type="button"
         {...buttonProps}
       >
