@@ -4,14 +4,15 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import { usePreferences } from "@/stores/preferences";
-import type { AvailablePlatformsData } from "@/types/providers";
-import type { DayDiscoverResponse } from "@/types/tmdb";
+import type {
+  JWDayResponse,
+  JWPackage,
+  JWPackagesResponse,
+} from "@/types/tmdb";
 import { fetcher } from "@/utils";
 import CardSkeleton from "./CardSkeleton";
 import FilterBar from "./FilterBar";
 import TimelineGroup from "./TimelineGroup";
-
-const TMDB_LOGO_BASE = "https://image.tmdb.org/t/p/original";
 
 type MediaType = "all" | "movie" | "tv";
 type Mode = "new" | "upcoming";
@@ -46,29 +47,21 @@ export default function NewPageContent() {
   const [mediaType, setMediaType] = useState<MediaType>("all");
   const [mode, setMode] = useState<Mode>("new");
   const [filters, setFilters] = useState({ genre: "", year: "", rating: "" });
-  const [selectedProvider, setSelectedProvider] = useState<number | null>(null);
-  const [days, setDays] = useState<DayDiscoverResponse[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const [days, setDays] = useState<JWDayResponse[]>([]);
   const [dayOffset, setDayOffset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const { country, platforms } = usePreferences();
+  const { country } = usePreferences();
 
-  // Load platform details for the user's selected platforms
-  const { data: platformData } = useSWR<AvailablePlatformsData>(
-    platforms.length > 0
-      ? `/api/providers?country=${country}&type=movie`
-      : null,
+  // Load JustWatch streaming packages for the country
+  const { data: packagesData } = useSWR<JWPackagesResponse>(
+    `/api/justwatch/packages?country=${country}`,
     fetcher
   );
 
-  // Filter to only user's platforms
-  const userPlatforms =
-    platformData?.platforms.filter((p) => platforms.includes(p.provider_id)) ||
-    [];
-
-  // Which providers to send to API: selected one, or all user platforms
-  const activeProviders = selectedProvider ? [selectedProvider] : platforms;
+  const jwPackages: JWPackage[] = packagesData?.packages || [];
 
   const fetchDay = useCallback(
     async (offset: number) => {
@@ -78,22 +71,33 @@ export default function NewPageContent() {
           : getDateOffset(new Date(), offset + 1);
 
       const params = new URLSearchParams({
-        type: mediaType,
-        mode,
         date,
         country,
-        ...(activeProviders.length > 0 && {
-          providers: activeProviders.join(","),
-        }),
-        ...(filters.genre && { genre: filters.genre }),
-        ...(filters.rating && { rating: filters.rating }),
       });
 
-      const res = await fetch(`/api/discover?${params.toString()}`);
-      const data: DayDiscoverResponse = await res.json();
+      if (selectedPackage) {
+        params.set("packages", selectedPackage);
+      }
+
+      const res = await fetch(`/api/justwatch/new?${params.toString()}`);
+      const data: JWDayResponse = await res.json();
+
+      // Client-side media type filter
+      if (mediaType !== "all") {
+        return {
+          ...data,
+          providers: data.providers
+            .map((p) => ({
+              ...p,
+              items: p.items.filter((item) => item.media_type === mediaType),
+            }))
+            .filter((p) => p.items.length > 0),
+        };
+      }
+
       return data;
     },
-    [mediaType, mode, country, activeProviders, filters]
+    [mediaType, mode, country, selectedPackage]
   );
 
   // Load initial 3 days
@@ -105,7 +109,7 @@ export default function NewPageContent() {
     setIsLoading(true);
 
     (async () => {
-      const results: DayDiscoverResponse[] = [];
+      const results: JWDayResponse[] = [];
       for (let i = 0; i < 3; i++) {
         const day = await fetchDay(i);
         if (cancelled) {
@@ -201,45 +205,47 @@ export default function NewPageContent() {
         ))}
       </div>
 
-      {/* Platform quick filter */}
-      {userPlatforms.length > 0 && (
+      {/* Platform quick filter from JustWatch packages */}
+      {jwPackages.length > 0 && (
         <div className="scrollbar-none flex items-center gap-2 overflow-x-auto">
           <button
             className={`flex-none rounded-full px-3 py-1.5 font-medium text-sm transition-colors ${
-              selectedProvider === null
+              selectedPackage === null
                 ? "bg-emerald-500 text-white"
                 : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
             }`}
-            onClick={() => setSelectedProvider(null)}
+            onClick={() => setSelectedPackage(null)}
             type="button"
           >
             All
           </button>
-          {userPlatforms.map((p) => (
+          {jwPackages.map((p) => (
             <button
               className={`flex flex-none items-center gap-1.5 rounded-full px-2.5 py-1 transition-all ${
-                selectedProvider === p.provider_id
+                selectedPackage === p.shortName
                   ? "bg-emerald-500/10 ring-2 ring-emerald-500"
                   : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
               }`}
-              key={p.provider_id}
+              key={p.shortName}
               onClick={() =>
-                setSelectedProvider(
-                  selectedProvider === p.provider_id ? null : p.provider_id
+                setSelectedPackage(
+                  selectedPackage === p.shortName ? null : p.shortName
                 )
               }
               type="button"
             >
-              <Image
-                alt={p.provider_name}
-                className="rounded"
-                height={20}
-                src={`${TMDB_LOGO_BASE}${p.logo_path}`}
-                unoptimized
-                width={20}
-              />
+              {p.icon && (
+                <Image
+                  alt={p.clearName}
+                  className="rounded"
+                  height={20}
+                  src={p.icon}
+                  unoptimized
+                  width={20}
+                />
+              )}
               <span className="font-medium text-xs text-zinc-700 dark:text-zinc-300">
-                {p.provider_name}
+                {p.clearName}
               </span>
             </button>
           ))}

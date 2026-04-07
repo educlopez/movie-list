@@ -147,6 +147,37 @@ export interface ApiErrorResponse {
   error: string;
 }
 
+/** JustWatch package/platform info. */
+export interface JWPackage {
+  clearName: string;
+  icon: string;
+  packageId: number;
+  shortName: string;
+}
+
+/** JustWatch provider results for a day. */
+export interface JWProviderResults {
+  clearName: string;
+  icon: string;
+  items: DiscoverItem[];
+  packageId: number;
+  shortName: string;
+}
+
+/** JustWatch day response. */
+export interface JWDayResponse {
+  date: string;
+  endCursor: string | null;
+  hasNextPage: boolean;
+  providers: JWProviderResults[];
+  totalCount: number;
+}
+
+/** JustWatch packages response. */
+export interface JWPackagesResponse {
+  packages: JWPackage[];
+}
+
 /** Extended media item with rating and overview for trending. */
 export interface TMDBTrendingItem extends TMDBMediaItem {
   genre_ids: number[];

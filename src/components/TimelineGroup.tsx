@@ -1,16 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import type { ProviderResults } from "@/types/tmdb";
+import type { JWProviderResults } from "@/types/tmdb";
 import MovieCard from "./MovieCard";
 
-const TMDB_LOGO_BASE = "https://image.tmdb.org/t/p/original";
+const JW_IMAGE_BASE = "https://images.justwatch.com";
 
 interface TimelineGroupProps {
   date: string;
   isLast?: boolean;
   label: string;
-  providerGroups: ProviderResults[];
+  providerGroups: JWProviderResults[];
   totalItems: number;
 }
 
@@ -40,41 +40,49 @@ export default function TimelineGroup({
         </div>
 
         <div className="space-y-6">
-          {providerGroups.map((pg) => (
-            <div key={pg.provider_id}>
-              <div className="mb-2 flex items-center gap-2">
-                {pg.logo_path ? (
-                  <Image
-                    alt={pg.provider_name}
-                    className="rounded"
-                    height={24}
-                    src={`${TMDB_LOGO_BASE}${pg.logo_path}`}
-                    unoptimized
-                    width={24}
-                  />
-                ) : null}
-                <span className="font-medium text-sm text-zinc-700 dark:text-zinc-300">
-                  {pg.provider_name}
-                </span>
-                <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                  {pg.items.length} {pg.items.length === 1 ? "title" : "titles"}
-                </span>
+          {providerGroups.map((pg) => {
+            const iconUrl = pg.icon
+              ? pg.icon.startsWith("http")
+                ? pg.icon
+                : `${JW_IMAGE_BASE}${pg.icon}`
+              : "";
+            return (
+              <div key={pg.shortName}>
+                <div className="mb-2 flex items-center gap-2">
+                  {iconUrl ? (
+                    <Image
+                      alt={pg.clearName}
+                      className="rounded"
+                      height={24}
+                      src={iconUrl}
+                      unoptimized
+                      width={24}
+                    />
+                  ) : null}
+                  <span className="font-medium text-sm text-zinc-700 dark:text-zinc-300">
+                    {pg.clearName}
+                  </span>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500">
+                    {pg.items.length}{" "}
+                    {pg.items.length === 1 ? "title" : "titles"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
+                  {pg.items.map((item) => (
+                    <MovieCard
+                      category={item.media_type}
+                      id={item.id}
+                      key={`${item.media_type}-${item.id}`}
+                      src={item.poster_path || ""}
+                      title={item.title}
+                      vote_average={item.vote_average}
+                      year={item.release_date}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
-                {pg.items.map((item) => (
-                  <MovieCard
-                    category={item.media_type}
-                    id={item.id}
-                    key={`${item.media_type}-${item.id}`}
-                    src={item.poster_path || ""}
-                    title={item.title}
-                    vote_average={item.vote_average}
-                    year={item.release_date}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
