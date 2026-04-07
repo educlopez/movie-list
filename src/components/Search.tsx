@@ -255,6 +255,13 @@ function SearchDialog({
   const [query, setQuery] = useState("");
   const pathname = usePathname();
 
+  // Autofocus input when dialog opens
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [open]);
+
   // Close on route change
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally only reacts to pathname changes
   useEffect(() => {
