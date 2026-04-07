@@ -31,11 +31,11 @@ function renderCasts(arr: TMDBCastMember[]): ReactNode {
     return arr.map((cast) => {
       return (
         <li
-          className="flex-none rounded-2xl border border-zinc-900/10 bg-white/10 backdrop-blur-sm dark:border-white/10 dark:bg-zinc-900/20 dark:backdrop-blur"
+          className="w-[140px] flex-none overflow-hidden rounded-2xl border border-zinc-900/10 bg-white/10 backdrop-blur-sm dark:border-white/10 dark:bg-zinc-900/20 dark:backdrop-blur"
           key={cast.credit_id}
         >
-          <div className="flex w-full flex-col items-center justify-center gap-3 pb-2">
-            <div className="relative h-[200px] w-[140px] overflow-hidden rounded-lg bg-zinc-200 dark:bg-zinc-800">
+          <div className="flex w-full flex-col items-center">
+            <div className="relative h-[190px] w-full overflow-hidden bg-zinc-200 dark:bg-zinc-800">
               {cast.profile_path ? (
                 <Image
                   alt={cast.name}
@@ -67,9 +67,11 @@ function renderCasts(arr: TMDBCastMember[]): ReactNode {
                 </div>
               )}
             </div>
-            <span className="mx-auto px-2 text-center text-xs lg:text-sm dark:text-white">
-              <p className="font-bold">{cast.name}</p>
-              <p className="w-32 truncate">{cast.character}</p>
+            <span className="w-full px-2 py-2 text-center text-xs lg:text-sm dark:text-white">
+              <p className="truncate font-bold">{cast.name}</p>
+              <p className="truncate text-zinc-500 dark:text-zinc-400">
+                {cast.character}
+              </p>
             </span>
           </div>
         </li>
