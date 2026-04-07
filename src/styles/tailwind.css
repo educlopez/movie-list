@@ -31,6 +31,15 @@
   --font-size-9xl--line-height: 1;
 }
 
+/* Hide scrollbars but keep scroll functionality */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom horizontal scroll for trending section */
 .y-scroll::-webkit-scrollbar {
   width: 4px;
