@@ -183,9 +183,10 @@ export default function NewPageContent() {
         </div>
       )}
 
-      {groups.map((group) => (
+      {groups.map((group, i) => (
         <TimelineGroup
           date={group.date}
+          isLast={i === groups.length - 1 && !hasMore}
           items={group.items}
           key={group.date}
           label={group.label}
