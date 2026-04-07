@@ -131,6 +131,7 @@ export interface TMDBPaginatedResponse {
 /** TMDB search result item (extends media item with media_type). */
 export interface TMDBSearchResult extends TMDBMediaItem {
   media_type: "movie" | "tv" | "person";
+  profile_path?: string | null;
 }
 
 /** TMDB search response. */

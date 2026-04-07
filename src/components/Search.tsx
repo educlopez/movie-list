@@ -12,8 +12,11 @@ import { usePathname } from "next/navigation";
 import { type SVGProps, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import type { TMDBSearchResponse } from "@/types/tmdb";
-import { fetcher, TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
-import RatingBadge from "./RatingBadge";
+import {
+  fetcher,
+  TMDB_IMAGE_CAST_ENDPOINT,
+  TMDB_IMAGE_THUMB_ENDPOINT,
+} from "@/utils";
 
 function SearchIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -57,19 +60,32 @@ function SearchResults({
 
   if (!(data || error)) {
     return (
-      <div className="space-y-2 p-2">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            className="flex animate-pulse gap-3 rounded-lg p-2"
-            key={`skel-${i.toString()}`}
-          >
-            <div className="h-[60px] w-[40px] rounded bg-zinc-200 dark:bg-zinc-700" />
-            <div className="flex-1 space-y-2 py-1">
-              <div className="h-3 w-3/4 rounded bg-zinc-200 dark:bg-zinc-700" />
-              <div className="h-3 w-1/2 rounded bg-zinc-200 dark:bg-zinc-700" />
+      <div className="grid grid-cols-2 gap-4 p-4">
+        <div className="space-y-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              className="flex animate-pulse gap-3 rounded-lg p-2"
+              key={`skel-m-${i.toString()}`}
+            >
+              <div className="h-[72px] w-[48px] rounded bg-zinc-200 dark:bg-zinc-700" />
+              <div className="flex-1 space-y-2 py-2">
+                <div className="h-3 w-3/4 rounded bg-zinc-200 dark:bg-zinc-700" />
+                <div className="h-3 w-1/2 rounded bg-zinc-200 dark:bg-zinc-700" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              className="flex animate-pulse items-center gap-3 rounded-lg p-2"
+              key={`skel-p-${i.toString()}`}
+            >
+              <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+              <div className="h-3 w-24 rounded bg-zinc-200 dark:bg-zinc-700" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -78,12 +94,15 @@ function SearchResults({
     return <p className="p-4 text-red-500 text-sm">Error loading results</p>;
   }
 
-  const results =
-    data?.results
-      ?.filter((r) => r.media_type === "movie" || r.media_type === "tv")
-      .slice(0, 8) || [];
+  const allResults = data?.results || [];
+  const media = allResults
+    .filter((r) => r.media_type === "movie" || r.media_type === "tv")
+    .slice(0, 4);
+  const people = allResults
+    .filter((r) => r.media_type === "person")
+    .slice(0, 4);
 
-  if (results.length === 0) {
+  if (media.length === 0 && people.length === 0) {
     return (
       <p className="p-4 text-sm text-zinc-500 dark:text-zinc-400">
         No results for &ldquo;{debouncedQuery}&rdquo;
@@ -92,73 +111,134 @@ function SearchResults({
   }
 
   return (
-    <ul className="max-h-[60vh] overflow-y-auto p-2">
-      {results.map((item) => {
-        const title =
-          item.title || item.original_name || item.original_title || "";
-        const year = (item.release_date || item.first_air_date || "").slice(
-          0,
-          4
-        );
-        const href = `/${item.media_type}/${item.id}`;
-        return (
-          <li key={`${item.media_type}-${item.id}`}>
-            <Link
-              className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-              href={href}
-              onClick={onSelect}
-            >
-              <div className="relative h-[60px] w-[40px] flex-none overflow-hidden rounded bg-zinc-200 dark:bg-zinc-800">
-                {item.poster_path ? (
-                  <Image
-                    alt={title}
-                    className="object-cover"
-                    fill
-                    src={`${TMDB_IMAGE_THUMB_ENDPOINT}${item.poster_path}`}
-                    unoptimized
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <svg
-                      aria-hidden="true"
-                      className="h-4 w-4 text-zinc-400"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                      viewBox="0 0 24 24"
+    <div>
+      <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-4">
+        {/* Movies & TV */}
+        {media.length > 0 && (
+          <div className="p-3">
+            <h3 className="mb-2 px-1 font-semibold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+              Movies &amp; TV
+            </h3>
+            <ul>
+              {media.map((item) => {
+                const title =
+                  item.title || item.original_name || item.original_title || "";
+                const year = (
+                  item.release_date ||
+                  item.first_air_date ||
+                  ""
+                ).slice(0, 4);
+                const href = `/${item.media_type}/${item.id}`;
+                return (
+                  <li key={`${item.media_type}-${item.id}`}>
+                    <Link
+                      className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      href={href}
+                      onClick={onSelect}
                     >
-                      <path
-                        d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                      <div className="relative h-[72px] w-[48px] flex-none overflow-hidden rounded-md bg-zinc-200 dark:bg-zinc-800">
+                        {item.poster_path ? (
+                          <Image
+                            alt={title}
+                            className="object-cover"
+                            fill
+                            src={`${TMDB_IMAGE_THUMB_ENDPOINT}${item.poster_path}`}
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <svg
+                              className="h-4 w-4 text-zinc-400"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={1.5}
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-sm text-zinc-900 dark:text-white">
+                          {title}
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                          {item.media_type === "tv" ? "TV Show" : "Movie"}
+                          {year && `, ${year}`}
+                        </p>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        {/* People */}
+        {people.length > 0 && (
+          <div className="border-zinc-200 p-3 sm:border-l dark:border-zinc-800">
+            <h3 className="mb-2 px-1 font-semibold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
+              People
+            </h3>
+            <ul>
+              {people.map((person) => (
+                <li key={`person-${person.id}`}>
+                  <div className="flex items-center gap-3 rounded-lg p-2">
+                    <div className="relative h-10 w-10 flex-none overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                      {person.poster_path || person.profile_path ? (
+                        <Image
+                          alt={person.original_name || ""}
+                          className="object-cover"
+                          fill
+                          src={`${TMDB_IMAGE_CAST_ENDPOINT}${person.profile_path || person.poster_path}`}
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <svg
+                            className="h-5 w-5 text-zinc-400 dark:text-zinc-600"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <p className="truncate font-medium text-sm text-zinc-900 dark:text-white">
+                      {person.original_name || person.title || ""}
+                    </p>
                   </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-sm text-zinc-900 dark:text-white">
-                  {title}
-                </p>
-                <div className="mt-0.5 flex items-center gap-2">
-                  {year && (
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {year}
-                    </span>
-                  )}
-                  <span className="font-medium text-[10px] text-zinc-400 uppercase dark:text-zinc-500">
-                    {item.media_type === "tv" ? "TV" : "Movie"}
-                  </span>
-                </div>
-              </div>
-              {item.vote_average !== undefined && item.vote_average > 0 && (
-                <RatingBadge rating={item.vote_average} size="sm" />
-              )}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* See more */}
+      <div className="border-zinc-200 border-t dark:border-zinc-800">
+        <Link
+          className="flex items-center justify-center gap-1 p-3 text-emerald-500 text-sm transition-colors hover:text-emerald-600"
+          href={`/search/${encodeURIComponent(debouncedQuery)}?page=1`}
+          onClick={onSelect}
+        >
+          See all results for &ldquo;{debouncedQuery}&rdquo; →
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -228,7 +308,7 @@ function SearchDialog({
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="mx-auto overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-zinc-900/10 sm:max-w-xl dark:bg-zinc-900 dark:ring-zinc-800">
+            <DialogPanel className="mx-auto overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-zinc-900/10 sm:max-w-2xl dark:bg-zinc-900 dark:ring-zinc-800">
               {/* Search input */}
               <div className="flex items-center gap-3 border-zinc-200 border-b px-4 dark:border-zinc-800">
                 <SearchIcon className="h-5 w-5 shrink-0 stroke-zinc-500" />
