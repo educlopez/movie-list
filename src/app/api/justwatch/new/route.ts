@@ -3,8 +3,8 @@ import { type NextRequest, NextResponse } from "next/server";
 const JUSTWATCH_API = "https://apis.justwatch.com/graphql";
 
 const NEW_TITLES_QUERY = `
-query GetNewTitles($country: Country!, $first: Int!, $after: String, $date: Date, $packages: [String!]) {
-  newTitles(country: $country, first: $first, after: $after, date: $date, packages: $packages) {
+query GetNewTitles($country: Country!, $first: Int!, $after: String, $date: Date, $package: String) {
+  newTitles(country: $country, first: $first, after: $after, date: $date, package: $package) {
     totalCount
     edges {
       node {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
       variables.after = after;
     }
     if (packages) {
-      variables.packages = packages.split(",");
+      variables.package = packages.split(",")[0];
     }
 
     const res = await fetch(JUSTWATCH_API, {
