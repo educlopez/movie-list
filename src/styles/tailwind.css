@@ -1,12 +1,60 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-size-xs: 0.8125rem;
+  --font-size-xs--line-height: 1.5rem;
+  --font-size-sm: 0.875rem;
+  --font-size-sm--line-height: 1.5rem;
+  --font-size-base: 1rem;
+  --font-size-base--line-height: 1.75rem;
+  --font-size-lg: 1.125rem;
+  --font-size-lg--line-height: 1.75rem;
+  --font-size-xl: 1.25rem;
+  --font-size-xl--line-height: 2rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-2xl--line-height: 2rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-3xl--line-height: 2.25rem;
+  --font-size-4xl: 2rem;
+  --font-size-4xl--line-height: 2.5rem;
+  --font-size-5xl: 3rem;
+  --font-size-5xl--line-height: 3.5rem;
+  --font-size-6xl: 3.75rem;
+  --font-size-6xl--line-height: 1;
+  --font-size-7xl: 4.5rem;
+  --font-size-7xl--line-height: 1;
+  --font-size-8xl: 6rem;
+  --font-size-8xl--line-height: 1;
+  --font-size-9xl: 8rem;
+  --font-size-9xl--line-height: 1;
+}
+
+/* Hide scrollbars but keep scroll functionality */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hero slider progress bar animation */
+@keyframes progress-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
 
 /* Custom horizontal scroll for trending section */
 .y-scroll::-webkit-scrollbar {
-  border-radius: 10px;
-  height: 4px;
   width: 4px;
+  height: 4px;
+  border-radius: 10px;
 }
 .y-scroll::-webkit-scrollbar-thumb:horizontal {
   background: #10b981;
