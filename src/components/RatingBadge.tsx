@@ -7,45 +7,45 @@ interface RatingBadgeProps {
 
 export default function RatingBadge({ rating, size = "sm" }: RatingBadgeProps) {
   const percentage = Math.round(rating * 10);
-  const radius = size === "sm" ? 16 : 22;
-  const stroke = size === "sm" ? 3 : 4;
+  const radius = size === "sm" ? 14 : 18;
+  const stroke = size === "sm" ? 2.5 : 3;
+  const padding = 4;
+  const viewBoxSize = (radius + stroke + padding) * 2;
+  const center = radius + stroke + padding;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (percentage / 100) * circumference;
-  const viewBoxSize = (radius + stroke) * 2;
-  const center = radius + stroke;
 
-  const color =
+  const strokeColor =
+    rating >= 7 ? "#10b981" : rating >= 5 ? "#f59e0b" : "#ef4444";
+
+  const trackColor =
     rating >= 7
-      ? "text-emerald-500"
+      ? "rgba(16,185,129,0.3)"
       : rating >= 5
-        ? "text-amber-500"
-        : "text-red-500";
+        ? "rgba(245,158,11,0.3)"
+        : "rgba(239,68,68,0.3)";
 
-  const bgColor =
-    rating >= 7
-      ? "stroke-emerald-500/20"
-      : rating >= 5
-        ? "stroke-amber-500/20"
-        : "stroke-red-500/20";
-
-  const textSize = size === "sm" ? "text-[10px]" : "text-xs";
+  const boxSize = size === "sm" ? 36 : 46;
+  const textSize = size === "sm" ? "text-[11px]" : "text-sm";
 
   return (
     <div
       aria-label={`Rating: ${rating.toFixed(1)} out of 10`}
-      className="relative inline-flex items-center justify-center"
+      className="relative inline-flex items-center justify-center rounded-full bg-zinc-900/90 backdrop-blur-sm"
+      style={{ width: boxSize, height: boxSize }}
     >
       <svg
-        className={`-rotate-90 ${color}`}
+        className="-rotate-90"
         height={viewBoxSize}
+        style={{ position: "absolute" }}
         width={viewBoxSize}
       >
         <circle
-          className={bgColor}
           cx={center}
           cy={center}
           fill="none"
           r={radius}
+          stroke={trackColor}
           strokeWidth={stroke}
         />
         <circle
@@ -53,16 +53,14 @@ export default function RatingBadge({ rating, size = "sm" }: RatingBadgeProps) {
           cy={center}
           fill="none"
           r={radius}
-          stroke="currentColor"
+          stroke={strokeColor}
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
           strokeWidth={stroke}
         />
       </svg>
-      <span
-        className={`absolute font-bold ${textSize} text-zinc-900 dark:text-white`}
-      >
+      <span className={`relative font-bold ${textSize} text-white`}>
         {rating.toFixed(1)}
       </span>
     </div>

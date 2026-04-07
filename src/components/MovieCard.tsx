@@ -5,7 +5,6 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { FADE_IN_ANIMATION_CARD_HOVER } from "@/lib/constants";
 import { TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
 import RatingBadge from "./RatingBadge";
 
@@ -40,7 +39,9 @@ export default function MovieCard({
   return (
     <motion.li
       className="group relative flex cursor-pointer flex-col items-start"
-      {...FADE_IN_ANIMATION_CARD_HOVER}
+      transition={{ duration: 0.15 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
     >
       <div onClick={handleClick}>
         <div className="relative">
