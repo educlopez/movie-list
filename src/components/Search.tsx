@@ -6,10 +6,14 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
-import clsx from "clsx";
-import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { type SVGProps, useEffect, useRef, useState } from "react";
-import { pathToSearchAll } from "@/utils";
+import useSWR from "swr";
+import type { TMDBSearchResponse } from "@/types/tmdb";
+import { fetcher, TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
+import RatingBadge from "./RatingBadge";
 
 function SearchIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -23,110 +27,246 @@ function SearchIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-interface SearchDialogProps {
-  className?: string;
-  onClose?: () => void;
-  open: boolean;
-  placeholder?: string;
-  searchPath?: string;
-  setOpen: (open: boolean) => void;
+function useDebounce(value: string, delay: number) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debounced;
+}
+
+function SearchResults({
+  query,
+  onSelect,
+}: {
+  query: string;
+  onSelect: () => void;
+}) {
+  const debouncedQuery = useDebounce(query, 300);
+  const { data, error } = useSWR<TMDBSearchResponse>(
+    debouncedQuery.length >= 2
+      ? `/api/search?q=${encodeURIComponent(debouncedQuery)}`
+      : null,
+    fetcher
+  );
+
+  if (debouncedQuery.length < 2) {
+    return null;
+  }
+
+  if (!(data || error)) {
+    return (
+      <div className="space-y-2 p-2">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            className="flex animate-pulse gap-3 rounded-lg p-2"
+            key={`skel-${i.toString()}`}
+          >
+            <div className="h-[60px] w-[40px] rounded bg-zinc-200 dark:bg-zinc-700" />
+            <div className="flex-1 space-y-2 py-1">
+              <div className="h-3 w-3/4 rounded bg-zinc-200 dark:bg-zinc-700" />
+              <div className="h-3 w-1/2 rounded bg-zinc-200 dark:bg-zinc-700" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p className="p-4 text-red-500 text-sm">Error loading results</p>;
+  }
+
+  const results =
+    data?.results
+      ?.filter((r) => r.media_type === "movie" || r.media_type === "tv")
+      .slice(0, 8) || [];
+
+  if (results.length === 0) {
+    return (
+      <p className="p-4 text-sm text-zinc-500 dark:text-zinc-400">
+        No results for &ldquo;{debouncedQuery}&rdquo;
+      </p>
+    );
+  }
+
+  return (
+    <ul className="max-h-[60vh] overflow-y-auto p-2">
+      {results.map((item) => {
+        const title =
+          item.title || item.original_name || item.original_title || "";
+        const year = (item.release_date || item.first_air_date || "").slice(
+          0,
+          4
+        );
+        const href = `/${item.media_type}/${item.id}`;
+        return (
+          <li key={`${item.media_type}-${item.id}`}>
+            <Link
+              className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              href={href}
+              onClick={onSelect}
+            >
+              <div className="relative h-[60px] w-[40px] flex-none overflow-hidden rounded bg-zinc-200 dark:bg-zinc-800">
+                {item.poster_path ? (
+                  <Image
+                    alt={title}
+                    className="object-cover"
+                    fill
+                    src={`${TMDB_IMAGE_THUMB_ENDPOINT}${item.poster_path}`}
+                    unoptimized
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <svg
+                      aria-hidden="true"
+                      className="h-4 w-4 text-zinc-400"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium text-sm text-zinc-900 dark:text-white">
+                  {title}
+                </p>
+                <div className="mt-0.5 flex items-center gap-2">
+                  {year && (
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {year}
+                    </span>
+                  )}
+                  <span className="font-medium text-[10px] text-zinc-400 uppercase dark:text-zinc-500">
+                    {item.media_type === "tv" ? "TV" : "Movie"}
+                  </span>
+                </div>
+              </div>
+              {item.vote_average !== undefined && item.vote_average > 0 && (
+                <RatingBadge rating={item.vote_average} size="sm" />
+              )}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 function SearchDialog({
-  onClose: _onClose,
   open,
   setOpen,
   className,
-  placeholder = "Search for Movies or TV Shows",
-  searchPath,
-}: SearchDialogProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const formRef = useRef<HTMLFormElement>(null);
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  className?: string;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
+  const pathname = usePathname();
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (query.length === 0) {
-      return;
-    }
-    router.push(`${searchPath}${query.trim()}?page=1`);
-    setQuery("");
-  };
-
-  // Close dialog on route change (replaces router.events which is removed in App Router)
+  // Close on route change
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally only reacts to pathname changes
   useEffect(() => {
     if (open) {
       setOpen(false);
+      setQuery("");
     }
   }, [pathname]);
 
+  // ⌘K shortcut
   useEffect(() => {
     if (open) {
       return;
     }
-
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpen(true);
       }
     }
-
     window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, setOpen]);
 
   return (
     <Transition show={open}>
       <Dialog
-        className={clsx("fixed inset-0 z-50", className)}
-        onClose={setOpen}
+        className={`fixed inset-0 z-50 ${className || ""}`}
+        onClose={() => {
+          setOpen(false);
+          setQuery("");
+        }}
       >
         <TransitionChild
-          enter="ease-out duration-300"
+          enter="ease-out duration-200"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in duration-200"
+          leave="ease-in duration-150"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-zinc-400/25 backdrop-blur-sm dark:bg-black/40" />
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
         </TransitionChild>
 
         <div className="fixed inset-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-20 md:py-32 lg:px-8 lg:py-[15vh]">
           <TransitionChild
-            enter="ease-out duration-300"
+            enter="ease-out duration-200"
             enterFrom="opacity-0 scale-95"
             enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200"
+            leave="ease-in duration-150"
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="mx-auto overflow-hidden rounded-lg bg-zinc-50 shadow-xl ring-1 ring-zinc-900/7.5 sm:max-w-xl dark:bg-zinc-900 dark:ring-zinc-800">
-              <div>
-                <form onSubmit={handleSearch} ref={formRef}>
-                  <div className="group relative flex h-12">
-                    <SearchIcon className="pointer-events-none absolute top-0 left-3 h-full w-5 stroke-zinc-500" />
-                    <input
-                      className={clsx(
-                        "flex-auto appearance-none bg-transparent pl-10 text-zinc-900 outline-none placeholder:text-zinc-500 focus:w-full focus:flex-none sm:text-sm dark:text-white [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden"
-                      )}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setQuery(e.target.value)
-                      }
-                      placeholder={placeholder}
-                      ref={inputRef}
-                      value={query}
-                    />
-                  </div>
-                </form>
+            <DialogPanel className="mx-auto overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-zinc-900/10 sm:max-w-xl dark:bg-zinc-900 dark:ring-zinc-800">
+              {/* Search input */}
+              <div className="flex items-center gap-3 border-zinc-200 border-b px-4 dark:border-zinc-800">
+                <SearchIcon className="h-5 w-5 shrink-0 stroke-zinc-500" />
+                <input
+                  className="h-12 flex-1 bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-white"
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search movies and TV shows..."
+                  ref={inputRef}
+                  value={query}
+                />
+                {query && (
+                  <button
+                    className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+                    onClick={() => setQuery("")}
+                    type="button"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
+
+              {/* Live results */}
+              <SearchResults
+                onSelect={() => {
+                  setOpen(false);
+                  setQuery("");
+                }}
+                query={query}
+              />
+
+              {/* Footer hint */}
+              {query.length === 0 && (
+                <div className="border-zinc-200 border-t px-4 py-3 dark:border-zinc-800">
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                    Type at least 2 characters to search
+                  </p>
+                </div>
+              )}
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -159,11 +299,7 @@ function useSearchProps() {
   };
 }
 
-interface SearchComponentProps {
-  searchPath?: string;
-}
-
-export function Search({ searchPath: _searchPath }: SearchComponentProps) {
+export function Search() {
   const [modifierKey, setModifierKey] = useState<string>();
   const { buttonProps, dialogProps } = useSearchProps();
 
@@ -187,20 +323,12 @@ export function Search({ searchPath: _searchPath }: SearchComponentProps) {
           <kbd className="font-sans">K</kbd>
         </kbd>
       </button>
-      <SearchDialog
-        className="hidden lg:block"
-        {...dialogProps}
-        searchPath={pathToSearchAll}
-      />
+      <SearchDialog className="hidden lg:block" {...dialogProps} />
     </div>
   );
 }
 
-interface MobileSearchProps {
-  searchPath?: string;
-}
-
-export function MobileSearch({ searchPath: _searchPath }: MobileSearchProps) {
+export function MobileSearch() {
   const { buttonProps, dialogProps } = useSearchProps();
 
   return (

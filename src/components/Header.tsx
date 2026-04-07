@@ -12,7 +12,6 @@ import {
 } from "@/components/MobileNavigation";
 import { ModeToggle } from "@/components/ModeToggle";
 import { MobileSearch, Search } from "@/components/Search";
-import { pathToSearchAll } from "@/utils";
 import PlatformSelector from "./PlatformSelector";
 
 interface TopLevelNavItemProps {
@@ -85,7 +84,7 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
       <Link aria-label="Home" className="hidden lg:block" href="/">
         <Logo className="h-6" />
       </Link>
-      <Search searchPath={pathToSearchAll} />
+      <Search />
       <div className="flex items-center gap-5 lg:hidden">
         <MobileNavigation />
         <Link aria-label="Home" href="/">
@@ -107,7 +106,7 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
-          <MobileSearch searchPath={pathToSearchAll} />
+          <MobileSearch />
           <PlatformSelector />
           <ModeToggle />
         </div>
