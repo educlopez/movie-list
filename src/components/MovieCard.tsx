@@ -4,7 +4,6 @@ import { FilmIcon, MonitorIcon } from "@iconicicons/react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import { TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
 import RatingBadge from "./RatingBadge";
 
@@ -36,6 +35,8 @@ export default function MovieCard({
     }
   };
 
+  const yearText = year ? year.slice(0, 4) : "";
+
   return (
     <motion.li
       className="group relative flex cursor-pointer flex-col items-start"
@@ -47,7 +48,7 @@ export default function MovieCard({
         <div className="relative">
           <Image
             alt={title}
-            className="pointer-events-none rounded-md"
+            className="pointer-events-none rounded-lg"
             draggable={false}
             height={225}
             src={
@@ -58,46 +59,31 @@ export default function MovieCard({
             unoptimized
             width={150}
           />
-          {vote_average !== undefined && (
-            <div className="absolute top-1 right-1">
+          {/* Rating badge — top right */}
+          {vote_average !== undefined && vote_average > 0 && (
+            <div className="absolute top-1.5 right-1.5">
               <RatingBadge rating={vote_average} />
             </div>
           )}
+          {/* Category badge — top left */}
+          <div className="absolute top-1.5 left-1.5 flex items-center gap-1 rounded-md bg-black/60 px-1.5 py-0.5 backdrop-blur-sm">
+            {category === "movie" ? (
+              <FilmIcon className="h-3 w-3 text-white" />
+            ) : (
+              <MonitorIcon className="h-3 w-3 text-white" />
+            )}
+            <span className="font-medium text-[10px] text-white">
+              {category === "movie" ? "Movie" : "TV"}
+            </span>
+          </div>
         </div>
-        <p className="mt-1 line-clamp-2 text-center text-zinc-600 dark:text-zinc-400">
+        <p className="mt-1.5 line-clamp-2 font-medium text-sm text-zinc-800 dark:text-zinc-200">
           {title}
         </p>
-        <p className="mt-1 text-center text-zinc-600 dark:text-zinc-400">
-          {renderYear(year)}
-        </p>
-        <p className="mt-1 flex justify-center text-zinc-600 dark:text-zinc-400">
-          {renderCategoryIcon(category)}
-          <span className="pr-[6px] pl-[6px]">
-            {renderCategoryText(category)}
-          </span>
-        </p>
+        {yearText && (
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">{yearText}</p>
+        )}
       </div>
     </motion.li>
   );
-}
-
-function renderYear(year: string | undefined): string {
-  if (year) {
-    return year.slice(0, 4);
-  }
-  return "N/A";
-}
-
-function renderCategoryIcon(category: string): ReactNode {
-  if (category === "movie") {
-    return <FilmIcon className="pl-1 text-base" />;
-  }
-  return <MonitorIcon className="pl-1 text-base" />;
-}
-
-function renderCategoryText(category: string): string {
-  if (category === "movie") {
-    return "Movie";
-  }
-  return "TV";
 }
