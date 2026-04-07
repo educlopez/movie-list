@@ -115,7 +115,7 @@ export default function NewPageContent() {
         if (cancelled) {
           return;
         }
-        if (day.providers.length > 0) {
+        if (day.providers?.length > 0) {
           results.push(day);
         }
       }
@@ -144,7 +144,7 @@ export default function NewPageContent() {
     for (let attempt = 0; attempt < 5; attempt++) {
       const day = await fetchDay(offset);
       offset++;
-      if (day.providers.length > 0) {
+      if (day.providers?.length > 0) {
         setDays((prev) => [...prev, day]);
         found = true;
         break;
