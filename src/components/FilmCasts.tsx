@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { useDragScroll } from "@/hooks/useDragScroll";
 import type { TMDBCastMember } from "@/types";
 import { shimmer, TMDB_IMAGE_CAST_ENDPOINT, toBase64 } from "@/utils";
 
@@ -8,10 +11,15 @@ interface FilmCastsProps {
 }
 
 export default function FilmCasts({ casts }: FilmCastsProps) {
+  const scrollRef = useDragScroll<HTMLUListElement>();
+
   return (
     <div className="mb-10 w-full text-zinc-900 dark:text-white">
       <h3 className="mb-2 md:text-lg">Top Billed Cast</h3>
-      <ul className="y-scroll relative flex touch-pan-y gap-x-6 overflow-x-auto text-xs md:text-sm">
+      <ul
+        className="scrollbar-none relative flex select-none touch-pan-y gap-x-4 overflow-x-auto pb-2 text-xs md:text-sm"
+        ref={scrollRef}
+      >
         {renderCasts(casts)}
       </ul>
     </div>
@@ -32,7 +40,8 @@ function renderCasts(arr: TMDBCastMember[]): ReactNode {
               blurDataURL={`data:image/svg+xml;base64,${toBase64(
                 shimmer(350, 530)
               )}`}
-              className="rounded-lg"
+              className="pointer-events-none rounded-lg"
+              draggable={false}
               height={225}
               placeholder="blur"
               src={
@@ -43,7 +52,7 @@ function renderCasts(arr: TMDBCastMember[]): ReactNode {
               unoptimized
               width={150}
             />
-            <span className="mx-auto px-2 text-center text-xs text-zinc-900 lg:text-sm dark:text-white">
+            <span className="mx-auto px-2 text-center text-xs lg:text-sm dark:text-white">
               <p className="font-bold">{cast.name}</p>
               <p className="w-32 truncate">{cast.character}</p>
             </span>
