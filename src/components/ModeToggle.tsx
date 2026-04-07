@@ -49,12 +49,12 @@ export function ModeToggle() {
   return (
     <button
       aria-label="Toggle dark mode"
-      className="flex h-6 w-6 items-center justify-center rounded-md transition hover:bg-zinc-900/5 dark:hover:bg-white/5"
+      className="flex items-center justify-center rounded-lg p-2 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
       onClick={toggleMode}
       type="button"
     >
-      <SunIcon className="h-5 w-5 stroke-zinc-900 dark:hidden" />
-      <MoonIcon className="hidden h-5 w-5 stroke-white dark:block" />
+      <SunIcon className="h-5 w-5 stroke-current dark:hidden" />
+      <MoonIcon className="hidden h-5 w-5 stroke-current dark:block" />
     </button>
   );
 }
