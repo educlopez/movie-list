@@ -163,3 +163,21 @@ export interface TrendingResponse {
 export interface GenreListResponse {
   genres: TMDBGenre[];
 }
+
+/** A discover result item. */
+export interface DiscoverItem {
+  genre_ids: number[];
+  id: number;
+  media_type: "movie" | "tv";
+  poster_path: string | null;
+  release_date: string;
+  title: string;
+  vote_average: number;
+}
+
+/** Discover API response. */
+export interface DiscoverResponse {
+  page: number;
+  results: DiscoverItem[];
+  total_pages: number;
+}
