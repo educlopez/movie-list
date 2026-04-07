@@ -3,6 +3,13 @@ import { API_KEY, TMDB_ENDPOINT } from "@/utils";
 
 const JUSTWATCH_API = "https://apis.justwatch.com/graphql";
 
+function jwIcon(icon: string): string {
+  if (!icon) {
+    return "";
+  }
+  return `https://images.justwatch.com${icon.replace("{profile}", "s100").replace("{format}", "webp")}`;
+}
+
 const NEW_TITLES_QUERY = `
 query GetNewTitles($country: Country!, $first: Int!, $after: String, $date: Date, $package: String) {
   newTitles(country: $country, first: $first, after: $after, date: $date, package: $package) {
@@ -136,7 +143,7 @@ export async function GET(request: NextRequest) {
             packageId: pkg.packageId,
             clearName: pkg.clearName,
             shortName: pkg.shortName,
-            icon: pkg.icon || "",
+            icon: jwIcon(pkg.icon || ""),
             items: [],
           };
         }
@@ -161,7 +168,7 @@ export async function GET(request: NextRequest) {
               packageId: pkg.packageId,
               clearName: pkg.clearName,
               shortName: pkg.shortName,
-              icon: pkg.icon || "",
+              icon: jwIcon(pkg.icon || ""),
               items: [],
             };
           }

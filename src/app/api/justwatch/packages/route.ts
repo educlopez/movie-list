@@ -36,7 +36,9 @@ export async function GET(request: NextRequest) {
         packageId: p.packageId,
         clearName: p.clearName,
         shortName: p.shortName,
-        icon: p.icon ? `https://images.justwatch.com${p.icon}` : "",
+        icon: p.icon
+          ? `https://images.justwatch.com${(p.icon as string).replace("{profile}", "s100").replace("{format}", "webp")}`
+          : "",
       }))
       .sort((a: Record<string, unknown>, b: Record<string, unknown>) =>
         (a.clearName as string).localeCompare(b.clearName as string)
