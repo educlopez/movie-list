@@ -52,7 +52,7 @@ export default function CardRow({
       {!(data || error) && <CardSkeleton />}
 
       {data && (
-        <ul className="scrollbar-none flex gap-4 overflow-x-auto pb-2">
+        <ul className="scrollbar-none flex gap-4 overflow-x-auto pt-2 pb-2">
           {data.results.slice(0, 14).map((item) => (
             <div className="w-[150px] flex-none" key={item.id}>
               <MovieCard

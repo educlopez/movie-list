@@ -58,7 +58,7 @@ export default function MovieCard({
             width={150}
           />
           {vote_average !== undefined && (
-            <div className="absolute -top-2 -right-2">
+            <div className="absolute top-1 right-1">
               <RatingBadge rating={vote_average} />
             </div>
           )}
