@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { API_KEY, TMDB_ENDPOINT } from "@/utils";
 
 const JUSTWATCH_API = "https://apis.justwatch.com/graphql";
 
@@ -175,6 +176,36 @@ export async function GET(request: NextRequest) {
         }
       }
     }
+
+    // Enrich items with TMDB data (poster + rating) — batch up to 20 items
+    const allItems = Object.values(providerMap).flatMap((p) => p.items);
+    const uniqueItems = new Map<string, Record<string, unknown>>();
+    for (const item of allItems) {
+      const key = `${item.media_type}-${item.id}`;
+      if (item.id && !uniqueItems.has(key)) {
+        uniqueItems.set(key, item);
+      }
+    }
+
+    const tmdbFetches = Array.from(uniqueItems.values())
+      .filter((item) => item.id && item.id !== 0)
+      .slice(0, 20)
+      .map(async (item) => {
+        try {
+          const res = await fetch(
+            `${TMDB_ENDPOINT}/${item.media_type}/${item.id}?api_key=${API_KEY}`
+          );
+          if (res.ok) {
+            const tmdb = await res.json();
+            item.poster_path = tmdb.poster_path || item.poster_path;
+            item.vote_average = tmdb.vote_average || 0;
+          }
+        } catch {
+          // Keep JustWatch data as fallback
+        }
+      });
+
+    await Promise.all(tmdbFetches);
 
     const providers = Object.values(providerMap)
       .filter((p) => p.items.length > 0)
