@@ -9,6 +9,7 @@ import MovieCard from "./MovieCard";
 
 interface CardRowProps {
   endpoint: string;
+  hideTitle?: boolean;
   mediaType?: "movie" | "tv";
   seeMoreHref: string;
   title: string;
@@ -19,22 +20,25 @@ export default function CardRow({
   endpoint,
   seeMoreHref,
   mediaType = "movie",
+  hideTitle = false,
 }: CardRowProps) {
   const { data, error } = useSWR<TMDBPaginatedResponse>(endpoint, fetcher);
 
   return (
     <section className="mb-8">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-semibold text-lg text-zinc-900 dark:text-white">
-          {title}
-        </h2>
-        <Link
-          className="font-medium text-emerald-500 text-sm hover:text-emerald-600"
-          href={seeMoreHref}
-        >
-          See more
-        </Link>
-      </div>
+      {!hideTitle && (
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-semibold text-lg text-zinc-900 dark:text-white">
+            {title}
+          </h2>
+          <Link
+            className="font-medium text-emerald-500 text-sm hover:text-emerald-600"
+            href={seeMoreHref}
+          >
+            See more
+          </Link>
+        </div>
+      )}
 
       {error && (
         <div
