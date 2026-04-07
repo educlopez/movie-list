@@ -55,7 +55,7 @@ export default function CardRow({
 
       {data && (
         <ul
-          className="scrollbar-none flex gap-4 overflow-x-auto pt-2 pb-2"
+          className="scrollbar-none flex select-none gap-4 overflow-x-auto pt-2 pb-2"
           ref={scrollRef}
         >
           {data.results.slice(0, 14).map((item) => (

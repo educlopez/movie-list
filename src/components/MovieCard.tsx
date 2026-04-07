@@ -47,7 +47,8 @@ export default function MovieCard({
         <div className="relative">
           <Image
             alt={title}
-            className="rounded-md"
+            className="pointer-events-none rounded-md"
+            draggable={false}
             height={225}
             src={
               src === "null"
