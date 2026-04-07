@@ -12,6 +12,7 @@ export interface TMDBMediaItem {
   poster_path: string | null;
   release_date?: string;
   title?: string;
+  vote_average?: number;
 }
 
 /** Props passed to the card component used by renderResults / renderResultsSlider. */
@@ -142,4 +143,21 @@ export interface TMDBSearchResponse {
 /** API error response. */
 export interface ApiErrorResponse {
   error: string;
+}
+
+/** Extended media item with rating and overview for trending. */
+export interface TMDBTrendingItem extends TMDBMediaItem {
+  genre_ids: number[];
+  overview: string;
+  vote_average: number;
+}
+
+/** Trending API response. */
+export interface TrendingResponse {
+  results: TMDBTrendingItem[];
+}
+
+/** Genre list API response. */
+export interface GenreListResponse {
+  genres: TMDBGenre[];
 }

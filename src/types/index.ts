@@ -1,6 +1,7 @@
 export * from "./providers";
 export type {
   ApiErrorResponse,
+  GenreListResponse,
   MediaCardComponent,
   MediaCardProps,
   MotionAnimationSettings,
@@ -15,6 +16,8 @@ export type {
   TMDBPaginatedResponse,
   TMDBSearchResponse,
   TMDBSearchResult,
+  TMDBTrendingItem,
   TMDBTvDetail,
+  TrendingResponse,
   TvDetailResponse,
 } from "./tmdb";

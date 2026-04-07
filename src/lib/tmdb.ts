@@ -34,6 +34,14 @@ export function getTvCasts(id: string | number): string {
   return `${TMDB_ENDPOINT}/tv/${id}/credits?api_key=${API_KEY}`;
 }
 
+export function getTrending(mediaType: string, timeWindow: string): string {
+  return `${TMDB_ENDPOINT}/trending/${mediaType}/${timeWindow}?api_key=${API_KEY}`;
+}
+
+export function getGenreList(type: string): string {
+  return `${TMDB_ENDPOINT}/genre/${type}/list?api_key=${API_KEY}`;
+}
+
 // Search for movies and TV Shows
 export function search(query: string, page: number | string): string {
   return `${TMDB_ENDPOINT}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(
