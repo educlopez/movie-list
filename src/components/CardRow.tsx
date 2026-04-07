@@ -3,7 +3,7 @@
 import Link from "next/link";
 import useSWR from "swr";
 import { useDragScroll } from "@/hooks/useDragScroll";
-import type { TMDBPaginatedResponse } from "@/types";
+import type { TMDBPaginatedResponse } from "@/types/tmdb";
 import { fetcher } from "@/utils";
 import CardSkeleton from "./CardSkeleton";
 import MovieCard from "./MovieCard";

@@ -1,4 +1,4 @@
-import type { TMDBLanguage } from "@/types";
+import type { TMDBLanguage } from "@/types/tmdb";
 
 export function renderLanguage(languages: TMDBLanguage[]): string {
   if (languages.length === 0) {

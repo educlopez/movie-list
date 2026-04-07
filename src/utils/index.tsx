@@ -1,4 +1,4 @@
-import type { MediaCardComponent, TMDBMediaItem } from "@/types";
+import type { MediaCardComponent, TMDBMediaItem } from "@/types/tmdb";
 
 export const TMDB_ENDPOINT: string | undefined = process.env.TMDB_ENDPOINT;
 export const API_KEY: string | undefined = process.env.TMDB_API_KEY;

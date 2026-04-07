@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import useSWR from "swr";
 import { usePreferences } from "@/stores/preferences";
-import type { AvailablePlatformsData } from "@/types";
+import type { AvailablePlatformsData } from "@/types/providers";
 import { fetcher } from "@/utils";
 import { COUNTRIES } from "@/utils/country";
 import PlatformGrid from "./PlatformGrid";

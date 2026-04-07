@@ -2,7 +2,7 @@ import useSWR from "swr";
 import Heading from "@/components/Heading";
 import Loading from "@/components/Loading";
 import MovieCard from "@/components/MovieCard";
-import type { MediaCardComponent, TMDBMediaItem } from "@/types";
+import type { MediaCardComponent, TMDBMediaItem } from "@/types/tmdb";
 import { fetcher, renderResults, sliceArray } from "@/utils";
 
 interface MovieListProps {

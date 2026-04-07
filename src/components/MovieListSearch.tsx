@@ -1,5 +1,5 @@
 import MovieCard from "@/components/MovieCard";
-import type { TMDBMediaItem } from "@/types";
+import type { TMDBMediaItem } from "@/types/tmdb";
 import { renderResults, sliceArray } from "@/utils";
 
 interface MovieListSearchProps {

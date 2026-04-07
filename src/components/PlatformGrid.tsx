@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { TMDBAvailablePlatform } from "@/types";
+import type { TMDBAvailablePlatform } from "@/types/providers";
 
 const TMDB_LOGO_BASE = "https://image.tmdb.org/t/p/original";
 

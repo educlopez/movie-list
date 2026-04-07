@@ -1,6 +1,6 @@
 "use client";
 
-import type { TMDBWatchProvider } from "@/types";
+import type { TMDBWatchProvider } from "@/types/providers";
 import ProviderLogo from "./ProviderLogo";
 
 interface ProviderCategoryProps {

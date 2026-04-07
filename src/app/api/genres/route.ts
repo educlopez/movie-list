@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getGenreList } from "@/lib/tmdb";
-import type { ApiErrorResponse, GenreListResponse } from "@/types";
+import type { ApiErrorResponse, GenreListResponse } from "@/types/tmdb";
 
 export async function GET(
   request: NextRequest

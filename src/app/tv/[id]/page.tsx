@@ -1,64 +1,62 @@
-"use client";
+import type { Metadata } from "next";
 
-import { use } from "react";
-import useSWR from "swr";
 import FilmCasts from "@/components/FilmCasts";
 import FilmGenres from "@/components/FilmGenres";
 import FilmHeading from "@/components/FilmHeading";
 import FilmImage from "@/components/FilmImage";
 import FilmInfo from "@/components/FilmInfo";
 import FilmSynopsis from "@/components/FilmSynopsis";
-import Loading from "@/components/Loading";
 import WatchProviders from "@/components/WatchProviders";
-import type { TvDetailResponse } from "@/types";
-import { fetcher } from "@/utils";
+import { getTvCasts, getTvDetail } from "@/lib/tmdb";
+import type { TMDBCreditsResponse, TMDBTvDetail } from "@/types/tmdb";
 import { renderLanguage, renderStatus } from "@/utils/media";
 
-export default function TV({
+export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
-}): React.JSX.Element {
-  const { id } = use(params);
-  const { data: tv, error: tvError } = useSWR<TvDetailResponse>(
-    `/api/tv/${id}`,
-    fetcher
-  );
+}): Promise<Metadata> {
+  const { id } = await params;
+  const res = await fetch(getTvDetail(id));
+  const detail: TMDBTvDetail = await res.json();
+  return { title: detail.name };
+}
 
-  if (tvError) {
-    return <div>{tvError}</div>;
-  }
-  if (!tv) {
-    return <div>{tvError}</div>;
-  }
+export default async function TV({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const [detailRes, creditsRes] = await Promise.all([
+    fetch(getTvDetail(id)),
+    fetch(getTvCasts(id)),
+  ]);
+  const [detail, credits]: [TMDBTvDetail, TMDBCreditsResponse] =
+    await Promise.all([detailRes.json(), creditsRes.json()]);
 
   return (
     <>
-      {tv ? (
-        <>
-          <div className="flex flex-col sm:mx-8 md:mx-0 md:flex-row md:items-start lg:justify-center">
-            <FilmImage src={tv.detail.poster_path} title={tv.detail.name} />
-            <div className="md:w-3/5">
-              <FilmHeading tagline={tv.detail.tagline} title={tv.detail.name} />
-              <FilmInfo
-                firstAir={tv.detail.first_air_date}
-                language={renderLanguage(tv.detail.spoken_languages || [])}
-                lastAir={tv.detail.last_air_date}
-                media_type="tv"
-                status={renderStatus(tv.detail.status)}
-              />
-              <FilmGenres genres={tv.detail.genres || []} />
-              <FilmSynopsis synopsis={tv.detail.overview} />
-              <WatchProviders id={tv.detail.id} type="tv" />
-            </div>
-          </div>
-          <div className="mt-4 flex flex-col sm:mx-8 md:mx-0 md:flex-row md:items-start lg:justify-center">
-            <FilmCasts casts={tv.credits.cast} />
-          </div>
-        </>
-      ) : (
-        <Loading />
-      )}
+      <div className="flex flex-col sm:mx-8 md:mx-0 md:flex-row md:items-start lg:justify-center">
+        <FilmImage src={detail.poster_path} title={detail.name} />
+        <div className="md:w-3/5">
+          <FilmHeading tagline={detail.tagline} title={detail.name} />
+          <FilmInfo
+            firstAir={detail.first_air_date}
+            language={renderLanguage(detail.spoken_languages || [])}
+            lastAir={detail.last_air_date}
+            media_type="tv"
+            status={renderStatus(detail.status)}
+          />
+          <FilmGenres genres={detail.genres || []} />
+          <FilmSynopsis synopsis={detail.overview} />
+          <WatchProviders id={detail.id} type="tv" />
+        </div>
+      </div>
+      <div className="mt-4 flex flex-col sm:mx-8 md:mx-0 md:flex-row md:items-start lg:justify-center">
+        <FilmCasts casts={credits.cast} />
+      </div>
     </>
   );
 }

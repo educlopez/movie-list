@@ -3,7 +3,8 @@ import {
   getAvailableMoviePlatforms,
   getAvailableTvPlatforms,
 } from "@/lib/tmdb-providers";
-import type { ApiErrorResponse, AvailablePlatformsData } from "@/types";
+import type { AvailablePlatformsData } from "@/types/providers";
+import type { ApiErrorResponse } from "@/types/tmdb";
 
 export async function GET(
   request: NextRequest

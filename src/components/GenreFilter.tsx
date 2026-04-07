@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import type { GenreListResponse } from "@/types";
+import type { GenreListResponse } from "@/types/tmdb";
 import { fetcher } from "@/utils";
 
 interface GenreFilterProps {

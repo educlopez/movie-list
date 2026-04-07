@@ -3,7 +3,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { useDragScroll } from "@/hooks/useDragScroll";
-import type { TMDBCastMember } from "@/types";
+import type { TMDBCastMember } from "@/types/tmdb";
 import { shimmer, TMDB_IMAGE_CAST_ENDPOINT, toBase64 } from "@/utils";
 
 interface FilmCastsProps {

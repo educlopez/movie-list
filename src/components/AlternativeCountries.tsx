@@ -1,6 +1,6 @@
 "use client";
 
-import type { AlternativeCountry } from "@/types";
+import type { AlternativeCountry } from "@/types/providers";
 import { getCountryName } from "@/utils/country";
 
 interface AlternativeCountriesProps {

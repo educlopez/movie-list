@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getTvCasts, getTvDetail } from "@/lib/tmdb";
-import type { ApiErrorResponse, TvDetailResponse } from "@/types";
+import type { ApiErrorResponse, TvDetailResponse } from "@/types/tmdb";
 
 export async function GET(
   _request: NextRequest,

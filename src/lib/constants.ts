@@ -1,5 +1,8 @@
 import type { Variants } from "motion/react";
-import type { MotionAnimationSettings, MotionCardAnimation } from "@/types";
+import type {
+  MotionAnimationSettings,
+  MotionCardAnimation,
+} from "@/types/tmdb";
 
 export const FADE_IN_ANIMATION_SETTINGS: MotionAnimationSettings = {
   initial: { opacity: 0 },

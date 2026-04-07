@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import { usePreferences } from "@/stores/preferences";
-import type { WatchProvidersData } from "@/types";
+import type { WatchProvidersData } from "@/types/providers";
 import { fetcher } from "@/utils";
 import AlternativeCountries from "./AlternativeCountries";
 import ProviderCategory from "./ProviderCategory";

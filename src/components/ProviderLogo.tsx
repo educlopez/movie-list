@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { TMDBWatchProvider } from "@/types";
+import type { TMDBWatchProvider } from "@/types/providers";
 
 const TMDB_LOGO_BASE = "https://image.tmdb.org/t/p/original";
 

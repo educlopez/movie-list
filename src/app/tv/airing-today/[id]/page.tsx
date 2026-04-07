@@ -4,7 +4,7 @@ import { use } from "react";
 import useSWR from "swr";
 import Loading from "@/components/Loading";
 import MovieListSearch from "@/components/MovieListSearch";
-import type { TMDBPaginatedResponse } from "@/types";
+import type { TMDBPaginatedResponse } from "@/types/tmdb";
 import { fetcher } from "@/utils";
 
 export default function AiringTodayTvShows({

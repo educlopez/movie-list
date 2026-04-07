@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
-import type { TrendingResponse } from "@/types";
+import type { TrendingResponse } from "@/types/tmdb";
 import { fetcher, TMDB_IMAGE_MULTIFACES } from "@/utils";
 import RatingBadge from "./RatingBadge";
 

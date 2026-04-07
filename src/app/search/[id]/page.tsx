@@ -1,7 +1,7 @@
 import { Button } from "@/components/Button";
 import MovieListSearch from "@/components/MovieListSearch";
 import { search } from "@/lib/tmdb";
-import type { TMDBSearchResponse, TMDBSearchResult } from "@/types";
+import type { TMDBSearchResponse, TMDBSearchResult } from "@/types/tmdb";
 
 interface SearchPageProps {
   params: Promise<{ id: string }>;

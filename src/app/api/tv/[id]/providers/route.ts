@@ -2,10 +2,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getTvWatchProviders } from "@/lib/tmdb-providers";
 import type {
   AlternativeCountry,
-  ApiErrorResponse,
   TMDBWatchProvidersResponse,
   WatchProvidersData,
-} from "@/types";
+} from "@/types/providers";
+import type { ApiErrorResponse } from "@/types/tmdb";
 
 export async function GET(
   request: NextRequest,
