@@ -46,15 +46,15 @@ export default function MovieCard({
         <div className="relative">
           <Image
             alt={title}
-            className="w-full rounded-md"
-            height={330}
+            className="rounded-md"
+            height={225}
             src={
               src === "null"
                 ? "https://placehold.co/150x225"
                 : `${TMDB_IMAGE_THUMB_ENDPOINT}${src}`
             }
             unoptimized
-            width={220}
+            width={150}
           />
           {vote_average !== undefined && (
             <div className="absolute -top-2 -right-2">

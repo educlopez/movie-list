@@ -52,9 +52,9 @@ export default function CardRow({
       {!(data || error) && <CardSkeleton />}
 
       {data && (
-        <div className="scrollbar-none flex gap-4 overflow-x-auto pb-2">
+        <ul className="scrollbar-none flex gap-4 overflow-x-auto pb-2">
           {data.results.slice(0, 14).map((item) => (
-            <div className="flex-none" key={item.id}>
+            <div className="w-[150px] flex-none" key={item.id}>
               <MovieCard
                 category={item.media_type || mediaType}
                 id={item.id}
@@ -70,7 +70,7 @@ export default function CardRow({
               />
             </div>
           ))}
-        </div>
+        </ul>
       )}
     </section>
   );
