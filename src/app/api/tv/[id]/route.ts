@@ -9,10 +9,14 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const response = await fetch(getTvDetail(id));
-    const response2 = await fetch(getTvCasts(id));
-    const data = await response.json();
-    const data2 = await response2.json();
+    const [response, response2] = await Promise.all([
+      fetch(getTvDetail(id)),
+      fetch(getTvCasts(id)),
+    ]);
+    const [data, data2] = await Promise.all([
+      response.json(),
+      response2.json(),
+    ]);
     return NextResponse.json({
       detail: data,
       credits: data2,

@@ -1,11 +1,16 @@
 "use client";
 
-import { Analytics } from "@vercel/analytics/react";
-import { motion } from "motion/react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { Layout } from "@/components/Layout";
+
+const Analytics = dynamic(
+  () =>
+    import("@vercel/analytics/react").then((m) => ({ default: m.Analytics })),
+  { ssr: false }
+);
 
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>(undefined);
@@ -22,28 +27,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const _previousPathname = usePrevious(pathname);
 
   return (
-    <motion.div
-      animate="show"
-      initial="hidden"
-      variants={{
-        hidden: {},
-        show: {
-          transition: {
-            staggerChildren: 0.15,
-          },
-        },
-      }}
-      viewport={{ once: true }}
-      whileInView="show"
-    >
-      <div className="relative">
-        <main>
-          <Layout>
-            {children}
-            <Analytics />
-          </Layout>
-        </main>
-      </div>
-    </motion.div>
+    <div className="relative">
+      <main>
+        <Layout>
+          {children}
+          <Analytics />
+        </Layout>
+      </main>
+    </div>
   );
 }
