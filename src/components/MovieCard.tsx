@@ -54,8 +54,8 @@ export default function MovieCard({
             src={
               src === "null" || src === ""
                 ? "https://placehold.co/150x225"
-                : src.startsWith("poster/")
-                  ? `https://images.justwatch.com/${src.replace("{profile}", "s166")}`
+                : src.startsWith("poster/") || src.startsWith("/poster/")
+                  ? `https://images.justwatch.com${src.startsWith("/") ? "" : "/"}${src.replace("{profile}", "s166")}`
                   : `${TMDB_IMAGE_THUMB_ENDPOINT}${src}`
             }
             unoptimized

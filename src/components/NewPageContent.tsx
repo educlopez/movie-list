@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
 import { usePreferences } from "@/stores/preferences";
 import type {
@@ -9,6 +9,7 @@ import type {
   JWPackage,
   JWPackagesResponse,
 } from "@/types/tmdb";
+import type { AvailablePlatformsData } from "@/types/providers";
 import { fetcher } from "@/utils";
 import CardSkeleton from "./CardSkeleton";
 import FilterBar from "./FilterBar";
@@ -53,7 +54,7 @@ export default function NewPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const { country } = usePreferences();
+  const { country, platforms } = usePreferences();
 
   // Load JustWatch streaming packages for the country
   const { data: packagesData } = useSWR<JWPackagesResponse>(
@@ -61,7 +62,32 @@ export default function NewPageContent() {
     fetcher
   );
 
-  const jwPackages: JWPackage[] = packagesData?.packages || [];
+  // Load TMDB available platforms to map user-selected provider IDs to names
+  const { data: tmdbPlatformsData } = useSWR<AvailablePlatformsData>(
+    platforms.length > 0
+      ? `/api/providers?country=${country}&type=movie`
+      : null,
+    fetcher
+  );
+
+  const allJwPackages: JWPackage[] = packagesData?.packages || [];
+
+  // Build set of selected provider names from TMDB data
+  const selectedProviderNames = useMemo(() => {
+    if (platforms.length === 0 || !tmdbPlatformsData) return null;
+    const selected = tmdbPlatformsData.platforms.filter((p) =>
+      platforms.includes(p.provider_id)
+    );
+    return new Set(selected.map((p) => p.provider_name.toLowerCase()));
+  }, [platforms, tmdbPlatformsData]);
+
+  // Filter JW packages to only user-selected platforms
+  const jwPackages = useMemo(() => {
+    if (!selectedProviderNames) return allJwPackages;
+    return allJwPackages.filter((p) =>
+      selectedProviderNames.has(p.clearName.toLowerCase())
+    );
+  }, [allJwPackages, selectedProviderNames]);
 
   const fetchDay = useCallback(
     async (offset: number) => {
@@ -82,22 +108,27 @@ export default function NewPageContent() {
       const res = await fetch(`/api/justwatch/new?${params.toString()}`);
       const data: JWDayResponse = await res.json();
 
-      // Client-side media type filter
-      if (mediaType !== "all") {
-        return {
-          ...data,
-          providers: data.providers
-            .map((p) => ({
-              ...p,
-              items: p.items.filter((item) => item.media_type === mediaType),
-            }))
-            .filter((p) => p.items.length > 0),
-        };
+      // Client-side platform filter: only show user-selected providers
+      let filteredProviders = data.providers;
+      if (selectedProviderNames) {
+        filteredProviders = filteredProviders.filter((p) =>
+          selectedProviderNames.has(p.clearName.toLowerCase())
+        );
       }
 
-      return data;
+      // Client-side media type filter
+      if (mediaType !== "all") {
+        filteredProviders = filteredProviders
+          .map((p) => ({
+            ...p,
+            items: p.items.filter((item) => item.media_type === mediaType),
+          }))
+          .filter((p) => p.items.length > 0);
+      }
+
+      return { ...data, providers: filteredProviders };
     },
-    [mediaType, mode, country, selectedPackage]
+    [mediaType, mode, country, selectedPackage, selectedProviderNames]
   );
 
   // Load initial 3 days

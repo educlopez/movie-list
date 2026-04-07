@@ -47,32 +47,54 @@ export async function GET(request: NextRequest) {
   const after = searchParams.get("after") || null;
 
   try {
-    const variables: Record<string, unknown> = {
-      country,
-      first: 30,
-      date,
-    };
-    if (after) {
-      variables.after = after;
-    }
-    if (packages) {
-      variables.package = packages.split(",")[0];
-    }
+    const packageFilter = packages ? packages.split(",")[0] : undefined;
 
-    const res = await fetch(JUSTWATCH_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: NEW_TITLES_QUERY, variables }),
-    });
+    // Fetch all pages from JustWatch (max 100 per page)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let allEdges: Array<Record<string, any>> = [];
+    let cursor: string | null = after;
+    let totalCount = 0;
+    const maxPages = 5; // Safety limit
 
-    const json = await res.json();
-    const data = json.data?.newTitles;
+    for (let page = 0; page < maxPages; page++) {
+      const variables: Record<string, unknown> = {
+        country,
+        first: 100,
+        date,
+      };
+      if (cursor) {
+        variables.after = cursor;
+      }
+      if (packageFilter) {
+        variables.package = packageFilter;
+      }
 
-    if (!data) {
-      return NextResponse.json(
-        { error: "No data from JustWatch" },
-        { status: 502 }
-      );
+      const res = await fetch(JUSTWATCH_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: NEW_TITLES_QUERY, variables }),
+      });
+
+      const json = await res.json();
+      const pageData = json.data?.newTitles;
+
+      if (!pageData) {
+        if (page === 0) {
+          return NextResponse.json(
+            { error: "No data from JustWatch" },
+            { status: 502 }
+          );
+        }
+        break;
+      }
+
+      totalCount = pageData.totalCount;
+      allEdges = allEdges.concat(pageData.edges || []);
+
+      if (!pageData.pageInfo?.hasNextPage) {
+        break;
+      }
+      cursor = pageData.pageInfo.endCursor;
     }
 
     // Group by package (platform)
@@ -87,7 +109,7 @@ export async function GET(request: NextRequest) {
       }
     > = {};
 
-    for (const edge of data.edges) {
+    for (const edge of allEdges) {
       const node = edge.node;
       const content = node.content;
       if (!content) {
@@ -196,7 +218,7 @@ export async function GET(request: NextRequest) {
 
     const tmdbFetches = Array.from(uniqueItems.values())
       .filter((item) => item.id && item.id !== 0)
-      .slice(0, 20)
+      .slice(0, 50)
       .map(async (item) => {
         try {
           const res = await fetch(
@@ -220,10 +242,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       date,
-      totalCount: data.totalCount,
+      totalCount,
       providers,
-      hasNextPage: data.pageInfo?.hasNextPage,
-      endCursor: data.pageInfo?.endCursor || null,
+      hasNextPage: false,
+      endCursor: null,
     });
   } catch (err) {
     return NextResponse.json(
