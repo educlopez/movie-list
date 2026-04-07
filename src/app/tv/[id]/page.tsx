@@ -9,6 +9,7 @@ import FilmImage from "@/components/FilmImage";
 import FilmInfo from "@/components/FilmInfo";
 import FilmSynopsis from "@/components/FilmSynopsis";
 import Loading from "@/components/Loading";
+import WatchProviders from "@/components/WatchProviders";
 import type { TvDetailResponse } from "@/types";
 import { fetcher } from "@/utils";
 import { renderLanguage, renderStatus } from "@/utils/media";
@@ -48,6 +49,7 @@ export default function TV({
               />
               <FilmGenres genres={tv.detail.genres || []} />
               <FilmSynopsis synopsis={tv.detail.overview} />
+              <WatchProviders id={tv.detail.id} type="tv" />
             </div>
           </div>
           <div className="mt-4 flex flex-col sm:mx-8 md:mx-0 md:flex-row md:items-start lg:justify-center">

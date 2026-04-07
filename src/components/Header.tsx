@@ -13,6 +13,7 @@ import {
 import { ModeToggle } from "@/components/ModeToggle";
 import { MobileSearch, Search } from "@/components/Search";
 import { pathToSearchAll } from "@/utils";
+import PlatformSelector from "./PlatformSelector";
 
 interface TopLevelNavItemProps {
   children: ReactNode;
@@ -107,6 +108,7 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
           <MobileSearch searchPath={pathToSearchAll} />
+          <PlatformSelector />
           <ModeToggle />
         </div>
       </div>
