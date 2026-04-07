@@ -2,21 +2,39 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import type { TrendingResponse } from "@/types";
 import { fetcher, TMDB_IMAGE_MULTIFACES } from "@/utils";
 import RatingBadge from "./RatingBadge";
 
+const AUTOPLAY_INTERVAL = 6000;
+
 export default function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval>>(null);
 
   const { data } = useSWR<TrendingResponse>(
     "/api/trending?type=all&time=day",
     fetcher
   );
 
-  if (!data || data.results.length === 0) {
+  const itemCount = data?.results?.length ? Math.min(data.results.length, 5) : 0;
+
+  const goToNext = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % itemCount);
+  }, [itemCount]);
+
+  useEffect(() => {
+    if (itemCount <= 1 || isPaused) return;
+    timerRef.current = setInterval(goToNext, AUTOPLAY_INTERVAL);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [itemCount, isPaused, goToNext]);
+
+  if (!data || itemCount === 0) {
     return (
       <div className="relative h-[400px] w-full animate-pulse rounded-2xl bg-zinc-200 sm:h-[450px] lg:h-[500px] dark:bg-zinc-800" />
     );
@@ -33,13 +51,16 @@ export default function HeroSection() {
     <section
       aria-label="Trending now"
       className="relative overflow-hidden rounded-2xl"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
     >
       {/* Backdrop */}
       <div className="relative h-[400px] w-full sm:h-[450px] lg:h-[500px]">
         <Image
           alt={title}
-          className="object-cover"
+          className="object-cover transition-opacity duration-700"
           fill
+          key={item.id}
           priority
           src={`${TMDB_IMAGE_MULTIFACES}${item.backdrop_path}`}
           unoptimized
@@ -88,10 +109,13 @@ export default function HeroSection() {
               className={`h-1.5 rounded-full transition-all ${
                 i === activeIndex
                   ? "w-8 bg-emerald-500"
-                  : "w-1.5 bg-white/40 hover:bg-white/60"
+                  : "w-3 bg-white/30 hover:bg-white/50"
               }`}
               key={`dot-${items[i].id.toString()}`}
-              onClick={() => setActiveIndex(i)}
+              onClick={() => {
+                setActiveIndex(i);
+                if (timerRef.current) clearInterval(timerRef.current);
+              }}
               type="button"
             />
           ))}
