@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useWatchlist, type WatchlistItem } from "@/stores/watchlist";
+import { useAuthWatchlist } from "@/hooks/useAuthWatchlist";
+import type { WatchlistItem } from "@/stores/watchlist";
 import MovieCard from "@/components/MovieCard";
 
 type FilterType = "all" | "movie" | "tv";
@@ -19,7 +20,7 @@ const sortOptions: { label: string; value: SortType }[] = [
 ];
 
 export default function WatchlistContent() {
-  const { items, removeItem } = useWatchlist();
+  const { items, removeItem } = useAuthWatchlist();
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("recent");
 

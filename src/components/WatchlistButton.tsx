@@ -1,6 +1,6 @@
 "use client";
 
-import { useWatchlist } from "@/stores/watchlist";
+import { useAuthWatchlist } from "@/hooks/useAuthWatchlist";
 
 interface WatchlistButtonProps {
   id: number;
@@ -15,7 +15,7 @@ export default function WatchlistButton({
   title,
   poster_path,
 }: WatchlistButtonProps) {
-  const { isInWatchlist, toggleItem } = useWatchlist();
+  const { isInWatchlist, toggleItem } = useAuthWatchlist();
   const inList = isInWatchlist(id, media_type);
 
   return (

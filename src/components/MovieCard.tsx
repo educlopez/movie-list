@@ -6,7 +6,7 @@ import Image from "next/image";
 import { memo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
-import { useWatchlist } from "@/stores/watchlist";
+import { useAuthWatchlist } from "@/hooks/useAuthWatchlist";
 import RatingBadge from "./RatingBadge";
 
 interface MovieCardProps {
@@ -28,7 +28,7 @@ export default memo(function MovieCard({
   year,
 }: MovieCardProps) {
   const router = useRouter();
-  const { isInWatchlist } = useWatchlist();
+  const { isInWatchlist } = useAuthWatchlist();
   const inWatchlist = isInWatchlist(id, category as "movie" | "tv");
 
   const handleClick = () => {

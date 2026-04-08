@@ -12,6 +12,7 @@ import {
 } from "@/components/MobileNavigation";
 import { ModeToggle } from "@/components/ModeToggle";
 import { MobileSearch, Search } from "@/components/Search";
+import AuthButton from "./AuthButton";
 import PlatformSelector from "./PlatformSelector";
 
 interface TopLevelNavItemProps {
@@ -111,6 +112,7 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
           <MobileSearch />
           <PlatformSelector />
           <ModeToggle />
+          <AuthButton />
         </div>
       </div>
     </motion.div>
