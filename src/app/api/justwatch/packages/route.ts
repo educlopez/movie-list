@@ -51,7 +51,14 @@ export async function GET(request: NextRequest) {
       (p.monetizationTypes as string[]).includes("FLATRATE")
     );
 
-    return NextResponse.json({ packages: streaming, allPackages: mapped });
+    return NextResponse.json(
+      { packages: streaming, allPackages: mapped },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      }
+    );
   } catch (err) {
     return NextResponse.json(
       { error: (err as Error).message },

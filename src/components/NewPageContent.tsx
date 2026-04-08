@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { usePreferences } from "@/stores/preferences";
 import type {
   JWDayResponse,
@@ -94,6 +94,18 @@ const EMPTY_FILTERS: Filters = {
   ageRating: "",
 };
 
+const MODE_TABS = [
+  { key: "new" as const, label: "Estrenos" },
+  { key: "upcoming" as const, label: "Proximamente" },
+  { key: "deals" as const, label: "Ofertas" },
+];
+
+const MEDIA_TYPE_TABS = [
+  { key: "all" as const, label: "Ver Todo" },
+  { key: "movie" as const, label: "Peliculas" },
+  { key: "tv" as const, label: "Series" },
+];
+
 export default function NewPageContent() {
   const [mediaType, setMediaType] = useState<MediaType>("all");
   const [mode, setMode] = useState<Mode>("new");
@@ -110,14 +122,14 @@ export default function NewPageContent() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { country, platforms } = usePreferences();
 
-  // Load JustWatch streaming packages for the country
-  const { data: packagesData } = useSWR<JWPackagesResponse>(
+  // Load JustWatch streaming packages for the country (immutable — rarely changes)
+  const { data: packagesData } = useSWRImmutable<JWPackagesResponse>(
     `/api/justwatch/packages?country=${country}`,
     fetcher
   );
 
-  // Load TMDB available platforms to map user-selected provider IDs to names
-  const { data: tmdbPlatformsData } = useSWR<AvailablePlatformsData>(
+  // Load TMDB available platforms to map user-selected provider IDs to names (immutable)
+  const { data: tmdbPlatformsData } = useSWRImmutable<AvailablePlatformsData>(
     platforms.length > 0
       ? `/api/providers?country=${country}&type=movie`
       : null,
@@ -264,9 +276,14 @@ export default function NewPageContent() {
         setDayOffset(1);
         setHasMore(false);
       } else {
-        for (let i = 0; i < 3; i++) {
-          const day = await fetchDay(i);
-          if (cancelled) return;
+        // Fetch 3 days in parallel to avoid waterfall
+        const dayResults = await Promise.all([
+          fetchDay(0),
+          fetchDay(1),
+          fetchDay(2),
+        ]);
+        if (cancelled) return;
+        for (const day of dayResults) {
           if (day.providers?.length > 0) results.push(day);
         }
         setDays(results);
@@ -325,13 +342,7 @@ export default function NewPageContent() {
     <div className="space-y-4">
       {/* Row 1: Mode tabs */}
       <div className="flex gap-1 border-b border-zinc-200 dark:border-zinc-700">
-        {(
-          [
-            { key: "new", label: "Estrenos" },
-            { key: "upcoming", label: "Proximamente" },
-            { key: "deals", label: "Ofertas" },
-          ] as const
-        ).map(({ key, label }) => (
+        {MODE_TABS.map(({ key, label }) => (
           <button
             className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               mode === key
@@ -351,13 +362,7 @@ export default function NewPageContent() {
       <div className="flex items-center justify-between gap-4">
         {/* Media type pills */}
         <div className="flex items-center rounded-full bg-zinc-100 p-1 dark:bg-zinc-800">
-          {(
-            [
-              { key: "all", label: "Ver Todo" },
-              { key: "movie", label: "Peliculas" },
-              { key: "tv", label: "Series" },
-            ] as const
-          ).map(({ key, label }) => (
+          {MEDIA_TYPE_TABS.map(({ key, label }) => (
             <button
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 mediaType === key
@@ -641,8 +646,8 @@ function FilterSelect({
   options?: { label: string; value: string }[];
   value: string;
 }) {
-  // Genre options are fetched dynamically if no options provided
-  const { data: genreData } = useSWR(
+  // Genre options are fetched dynamically if no options provided (immutable)
+  const { data: genreData } = useSWRImmutable(
     !options ? "/api/genres?type=movie" : null,
     fetcher
   );

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { API_KEY, TMDB_ENDPOINT } from "@/utils";
+import { enrichWithTmdb } from "@/lib/tmdb-cache";
 
 const JUSTWATCH_API = "https://apis.justwatch.com/graphql";
 
@@ -240,47 +240,28 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Enrich items with TMDB data (poster + rating) — batch up to 20 items
+    // Enrich items with TMDB data (poster + rating) — cached LRU
     const allItems = Object.values(providerMap).flatMap((p) => p.items);
-    const uniqueItems = new Map<string, Record<string, unknown>>();
-    for (const item of allItems) {
-      const key = `${item.media_type}-${item.id}`;
-      if (item.id && !uniqueItems.has(key)) {
-        uniqueItems.set(key, item);
-      }
-    }
-
-    const tmdbFetches = Array.from(uniqueItems.values())
-      .filter((item) => item.id && item.id !== 0)
-      .slice(0, 50)
-      .map(async (item) => {
-        try {
-          const res = await fetch(
-            `${TMDB_ENDPOINT}/${item.media_type}/${item.id}?api_key=${API_KEY}`
-          );
-          if (res.ok) {
-            const tmdb = await res.json();
-            item.poster_path = tmdb.poster_path || item.poster_path;
-            item.vote_average = tmdb.vote_average || 0;
-          }
-        } catch {
-          // Keep JustWatch data as fallback
-        }
-      });
-
-    await Promise.all(tmdbFetches);
+    await enrichWithTmdb(allItems);
 
     const providers = Object.values(providerMap)
       .filter((p) => p.items.length > 0)
       .sort((a, b) => b.items.length - a.items.length);
 
-    return NextResponse.json({
-      date,
-      totalCount,
-      providers,
-      hasNextPage: false,
-      endCursor: null,
-    });
+    return NextResponse.json(
+      {
+        date,
+        totalCount,
+        providers,
+        hasNextPage: false,
+        endCursor: null,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
+        },
+      }
+    );
   } catch (err) {
     return NextResponse.json(
       { error: (err as Error).message },

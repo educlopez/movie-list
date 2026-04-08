@@ -21,7 +21,7 @@ export default function GenreFilter({
 
   return (
     <div
-      aria-label="Filter by genre"
+      aria-label="Filtrar por género"
       className="scrollbar-none flex gap-2 overflow-x-auto py-2"
       role="tablist"
     >
@@ -36,7 +36,7 @@ export default function GenreFilter({
         role="tab"
         type="button"
       >
-        All
+        Todos
       </button>
       {data.genres.map((genre) => (
         <button

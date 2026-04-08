@@ -1,78 +1,75 @@
 "use client";
 
-import useSWR from "swr";
-import type { GenreListResponse } from "@/types/tmdb";
-import { fetcher } from "@/utils";
-
-interface Filters {
-  genre: string;
-  rating: string;
-  year: string;
-}
-
 interface FilterBarProps {
-  filters: Filters;
-  onFilterChange: (filters: Filters) => void;
+  onRatingChange: (rating: number | null) => void;
+  onYearChange: (year: number | null) => void;
+  selectedRating: number | null;
+  selectedYear: number | null;
 }
 
-export default function FilterBar({ filters, onFilterChange }: FilterBarProps) {
-  const { data: genreData } = useSWR<GenreListResponse>(
-    "/api/genres?type=movie",
-    fetcher
-  );
+const YEARS = Array.from({ length: 10 }, (_, i) => 2026 - i);
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
+const RATINGS = [
+  { label: "7+", value: 7 },
+  { label: "6+", value: 6 },
+  { label: "5+", value: 5 },
+];
 
-  const selectClass =
-    "rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white";
+export default function FilterBar({
+  onRatingChange,
+  onYearChange,
+  selectedRating,
+  selectedYear,
+}: FilterBarProps) {
+  const selectBase =
+    "rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 transition-colors hover:border-zinc-300 focus:border-emerald-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-600 dark:focus:border-emerald-500";
+
+  const hasFilters = selectedYear !== null || selectedRating !== null;
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex items-center gap-3">
       <select
-        className={selectClass}
-        onChange={(e) => onFilterChange({ ...filters, genre: e.target.value })}
-        value={filters.genre}
+        aria-label="Filtrar por año"
+        className={selectBase}
+        onChange={(e) =>
+          onYearChange(e.target.value ? Number(e.target.value) : null)
+        }
+        value={selectedYear ?? ""}
       >
-        <option value="">All Genres</option>
-        {genreData?.genres.map((g) => (
-          <option key={g.id} value={g.id.toString()}>
-            {g.name}
-          </option>
-        ))}
-      </select>
-
-      <select
-        className={selectClass}
-        onChange={(e) => onFilterChange({ ...filters, year: e.target.value })}
-        value={filters.year}
-      >
-        <option value="">All Years</option>
-        {years.map((y) => (
-          <option key={y} value={y.toString()}>
+        <option value="">Año</option>
+        {YEARS.map((y) => (
+          <option key={y} value={y}>
             {y}
           </option>
         ))}
       </select>
 
       <select
-        className={selectClass}
-        onChange={(e) => onFilterChange({ ...filters, rating: e.target.value })}
-        value={filters.rating}
+        aria-label="Filtrar por puntuación"
+        className={selectBase}
+        onChange={(e) =>
+          onRatingChange(e.target.value ? Number(e.target.value) : null)
+        }
+        value={selectedRating ?? ""}
       >
-        <option value="">Any Rating</option>
-        <option value="7">7+</option>
-        <option value="6">6+</option>
-        <option value="5">5+</option>
+        <option value="">Puntuación</option>
+        {RATINGS.map((r) => (
+          <option key={r.value} value={r.value}>
+            {r.label}
+          </option>
+        ))}
       </select>
 
-      {(filters.genre || filters.year || filters.rating) && (
+      {hasFilters && (
         <button
           className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-          onClick={() => onFilterChange({ genre: "", year: "", rating: "" })}
+          onClick={() => {
+            onYearChange(null);
+            onRatingChange(null);
+          }}
           type="button"
         >
-          Reset
+          Limpiar
         </button>
       )}
     </div>

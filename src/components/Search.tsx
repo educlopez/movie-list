@@ -91,7 +91,7 @@ function SearchResults({
   }
 
   if (error) {
-    return <p className="p-4 text-red-500 text-sm">Error loading results</p>;
+    return <p className="p-4 text-red-500 text-sm">Error al cargar resultados</p>;
   }
 
   const allResults = data?.results || [];
@@ -105,7 +105,7 @@ function SearchResults({
   if (media.length === 0 && people.length === 0) {
     return (
       <p className="p-4 text-sm text-zinc-500 dark:text-zinc-400">
-        No results for &ldquo;{debouncedQuery}&rdquo;
+        Sin resultados para &ldquo;{debouncedQuery}&rdquo;
       </p>
     );
   }
@@ -117,7 +117,7 @@ function SearchResults({
         {media.length > 0 && (
           <div className="p-3">
             <h3 className="mb-2 px-1 font-semibold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
-              Movies &amp; TV
+              Películas y Series
             </h3>
             <ul>
               {media.map((item) => {
@@ -168,7 +168,7 @@ function SearchResults({
                           {title}
                         </p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                          {item.media_type === "tv" ? "TV Show" : "Movie"}
+                          {item.media_type === "tv" ? "Serie" : "Película"}
                           {year && `, ${year}`}
                         </p>
                       </div>
@@ -184,7 +184,7 @@ function SearchResults({
         {people.length > 0 && (
           <div className="border-zinc-200 p-3 sm:border-l dark:border-zinc-800">
             <h3 className="mb-2 px-1 font-semibold text-[11px] text-zinc-400 uppercase tracking-wider dark:text-zinc-500">
-              People
+              Personas
             </h3>
             <ul>
               {people.map((person) => (
@@ -235,7 +235,7 @@ function SearchResults({
           href={`/search/${encodeURIComponent(debouncedQuery)}?page=1`}
           onClick={onSelect}
         >
-          See all results for &ldquo;{debouncedQuery}&rdquo; →
+          Ver todos los resultados de &ldquo;{debouncedQuery}&rdquo; →
         </Link>
       </div>
     </div>
@@ -322,7 +322,7 @@ function SearchDialog({
                 <input
                   className="h-12 flex-1 bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-white"
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search movies and TV shows..."
+                  placeholder="Buscar películas y series..."
                   ref={inputRef}
                   value={query}
                 />
@@ -332,7 +332,7 @@ function SearchDialog({
                     onClick={() => setQuery("")}
                     type="button"
                   >
-                    Clear
+                    Limpiar
                   </button>
                 )}
               </div>
@@ -350,7 +350,7 @@ function SearchDialog({
               {query.length === 0 && (
                 <div className="border-zinc-200 border-t px-4 py-3 dark:border-zinc-800">
                   <p className="text-xs text-zinc-400 dark:text-zinc-500">
-                    Type at least 2 characters to search
+                    Escribe al menos 2 caracteres para buscar
                   </p>
                 </div>
               )}
@@ -404,7 +404,7 @@ export function Search() {
         {...buttonProps}
       >
         <SearchIcon className="h-5 w-5 stroke-current" />
-        Find something...
+        Buscar...
         <kbd className="ml-auto text-2xs text-zinc-400 dark:text-zinc-500">
           <kbd className="font-sans">{modifierKey}</kbd>
           <kbd className="font-sans">K</kbd>
@@ -421,7 +421,7 @@ export function MobileSearch() {
   return (
     <div className="contents lg:hidden">
       <button
-        aria-label="Find something..."
+        aria-label="Buscar..."
         className="flex h-6 w-6 items-center justify-center rounded-md transition hover:bg-zinc-900/5 lg:hidden dark:hover:bg-white/5 focus:[&:not(:focus-visible)]:outline-none"
         type="button"
         {...buttonProps}

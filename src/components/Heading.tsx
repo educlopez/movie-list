@@ -25,7 +25,7 @@ export default function Heading({
       )}
       <Link as={href} href={href} passHref>
         <div className="cursor-pointer font-medium text-app-greyish-blue text-xs uppercase tracking-wide hover:underline">
-          See more
+          Ver más
         </div>
       </Link>
     </div>

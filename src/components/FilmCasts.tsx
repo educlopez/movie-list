@@ -15,7 +15,7 @@ export default function FilmCasts({ casts }: FilmCastsProps) {
 
   return (
     <div className="mb-10 w-full text-zinc-900 dark:text-white">
-      <h3 className="mb-2 md:text-lg">Top Billed Cast</h3>
+      <h3 className="mb-2 md:text-lg">Reparto principal</h3>
       <ul
         className="scrollbar-none relative flex touch-pan-y select-none gap-x-4 overflow-x-auto pb-2 text-xs md:text-sm"
         ref={scrollRef}

@@ -39,8 +39,29 @@ const modeScript = `
 
 export const metadata = {
   title: { default: "Movielist", template: "%s - Movielist" },
-  description: "Discover and explore movies and TV shows",
+  description:
+    "Descubre, explora y guarda tus películas y series favoritas. Información actualizada de estrenos, tendencias y plataformas de streaming.",
   robots: "all",
+  openGraph: {
+    title: {
+      default: "Movielist",
+      template: "%s - Movielist",
+    },
+    description:
+      "Descubre, explora y guarda tus películas y series favoritas. Información actualizada de estrenos, tendencias y plataformas de streaming.",
+    siteName: "Movielist",
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: {
+      default: "Movielist",
+      template: "%s - Movielist",
+    },
+    description:
+      "Descubre, explora y guarda tus películas y series favoritas.",
+  },
   alternates: {
     types: {
       "application/rss+xml": `${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.xml`,

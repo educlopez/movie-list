@@ -16,7 +16,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="relative overflow-hidden">
       <Image
-        alt="Background ray for light mode"
+        alt=""
         className="absolute top-0 left-1/2 -ml-[39rem] w-[113.125rem] max-w-none dark:hidden"
         height={502}
         priority
@@ -24,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
         width={1810}
       />
       <Image
-        alt="Background ray for dark mode"
+        alt=""
         className="absolute top-0 left-1/2 -ml-[39rem] hidden w-[113.125rem] max-w-none dark:block"
         height={502}
         priority

@@ -56,7 +56,7 @@ export default function HeroSection() {
 
   return (
     <section
-      aria-label="Trending now"
+      aria-label="Tendencias"
       className="relative overflow-hidden rounded-2xl"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -69,6 +69,7 @@ export default function HeroSection() {
           fill
           key={item.id}
           priority
+          sizes="100vw"
           src={`${TMDB_IMAGE_MULTIFACES}${item.backdrop_path}`}
           unoptimized
         />
@@ -81,7 +82,7 @@ export default function HeroSection() {
       <div className="absolute right-0 bottom-0 left-0 p-6 sm:p-8 lg:p-12">
         <div className="mb-2 flex items-center gap-3">
           <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 font-medium text-emerald-400 text-xs">
-            {mediaType === "tv" ? "TV Show" : "Movie"}
+            {mediaType === "tv" ? "Serie" : "Película"}
           </span>
           {year && <span className="text-sm text-zinc-300">{year}</span>}
         </div>

@@ -38,7 +38,9 @@ export function Navigation(props: NavigationProps) {
   return (
     <nav {...props}>
       <ul>
-        <TopLevelNavItem href="/">Home</TopLevelNavItem>
+        <TopLevelNavItem href="/">Inicio</TopLevelNavItem>
+        <TopLevelNavItem href="/new">Novedades</TopLevelNavItem>
+        <TopLevelNavItem href="/watchlist">Mi Lista</TopLevelNavItem>
         <TopLevelNavItem
           href="https://github.com/educlopez/movie-list"
           rel="noopener noreferrer"

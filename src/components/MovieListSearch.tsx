@@ -23,7 +23,7 @@ export default function MovieListSearch({
     <div>
       {isGenre ? null : (
         <h1 className="md:heading-lg mb-6 font-light text-xl text-zinc-900 lg:mb-8 dark:text-white">
-          {`Found ${totalResult} results for '${searchTerm}'`}
+          {`Se encontraron ${totalResult} resultados para '${searchTerm}'`}
         </h1>
       )}
       <ul className="grid grid-cols-2 gap-x-12 gap-y-16 sm:grid-cols-4 lg:grid-cols-7">

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getUrl2, tvTopRated } from "@/lib/tmdb";
+import { getPagedUrl, tvTopRated } from "@/lib/tmdb";
 import type { ApiErrorResponse, TMDBPaginatedResponse } from "@/types/tmdb";
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   const { id } = await params;
 
   try {
-    const url = getUrl2(tvTopRated, id);
+    const url = getPagedUrl(tvTopRated, id);
     const response = await fetch(url);
     const data = await response.json();
     return NextResponse.json({

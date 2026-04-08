@@ -40,9 +40,9 @@ export function ModeToggle() {
     const isDarkMode = document.documentElement.classList.toggle("dark");
 
     if (isDarkMode === isSystemDarkMode) {
-      delete (window.localStorage as Record<string, unknown>).isDarkMode;
+      window.localStorage.removeItem("isDarkMode");
     } else {
-      (window.localStorage as Record<string, unknown>).isDarkMode = isDarkMode;
+      window.localStorage.setItem("isDarkMode", String(isDarkMode));
     }
   }
 

@@ -14,8 +14,10 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const query = decodeURIComponent(id);
   return {
-    title: `${id} - Search Results`,
+    title: `Buscar: ${query}`,
+    description: `Resultados de búsqueda para "${query}" en películas y series`,
   };
 }
 
@@ -48,29 +50,29 @@ export default async function Search({
             {Number.parseInt(page, 10) === 1 ? (
               <>
                 <Button disabled variant="disabled">
-                  First page
+                  Primera página
                 </Button>
                 <Button disabled variant="disabled">
-                  Prev page
+                  Pág. anterior
                 </Button>
               </>
             ) : (
               <>
-                <Button href={`/search/${id}?page=1`}>First</Button>
+                <Button href={`/search/${id}?page=1`}>Primera</Button>
                 <Button
                   href={`/search/${id}?page=${Number.parseInt(page, 10) - 1}`}
                 >
-                  Prev Page
+                  Pág. anterior
                 </Button>
               </>
             )}
             {Number.parseInt(page, 10) === data.total_pages ? (
               <>
                 <Button disabled variant="disabled">
-                  Next page
+                  Pág. siguiente
                 </Button>
                 <Button disabled variant="disabled">
-                  Last page
+                  Última página
                 </Button>
               </>
             ) : (
@@ -78,10 +80,10 @@ export default async function Search({
                 <Button
                   href={`/search/${id}?page=${Number.parseInt(page, 10) + 1}`}
                 >
-                  Next Page
+                  Pág. siguiente
                 </Button>
                 <Button href={`/search/${id}?page=${data.total_pages}`}>
-                  Last
+                  Última
                 </Button>
               </>
             )}

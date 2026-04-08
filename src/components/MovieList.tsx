@@ -34,7 +34,7 @@ export default function MovieList({
   );
 
   if (error) {
-    return <div>Error occurred</div>;
+    return <div>Ha ocurrido un error</div>;
   }
 
   return (

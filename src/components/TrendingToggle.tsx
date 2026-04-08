@@ -11,7 +11,7 @@ export default function TrendingToggle({
 }: TrendingToggleProps) {
   return (
     <div
-      aria-label="Trending time window"
+      aria-label="Periodo de tendencias"
       className="inline-flex rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800"
       role="tablist"
     >
@@ -26,7 +26,7 @@ export default function TrendingToggle({
         role="tab"
         type="button"
       >
-        Today
+        Hoy
       </button>
       <button
         aria-selected={timeWindow === "week"}
@@ -39,7 +39,7 @@ export default function TrendingToggle({
         role="tab"
         type="button"
       >
-        This week
+        Esta semana
       </button>
     </div>
   );

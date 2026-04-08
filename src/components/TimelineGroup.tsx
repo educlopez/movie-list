@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { memo } from "react";
 import type { JWProviderResults } from "@/types/tmdb";
 import MovieCard from "./MovieCard";
 
@@ -14,7 +15,7 @@ interface TimelineGroupProps {
   totalItems: number;
 }
 
-export default function TimelineGroup({
+export default memo(function TimelineGroup({
   label,
   providerGroups,
   totalItems,
@@ -35,7 +36,7 @@ export default function TimelineGroup({
             {label}
           </h3>
           <span className="text-xs text-zinc-400 dark:text-zinc-500">
-            {totalItems} {totalItems === 1 ? "title" : "titles"}
+            {totalItems} {totalItems === 1 ? "título" : "títulos"}
           </span>
         </div>
 
@@ -64,10 +65,13 @@ export default function TimelineGroup({
                   </span>
                   <span className="text-xs text-zinc-400 dark:text-zinc-500">
                     {pg.items.length}{" "}
-                    {pg.items.length === 1 ? "title" : "titles"}
+                    {pg.items.length === 1 ? "título" : "títulos"}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
+                <div
+                  className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8"
+                  style={{ contentVisibility: "auto", containIntrinsicSize: "0 280px" }}
+                >
                   {pg.items.map((item) => (
                     <MovieCard
                       category={item.media_type}
@@ -87,4 +91,4 @@ export default function TimelineGroup({
       </div>
     </div>
   );
-}
+});

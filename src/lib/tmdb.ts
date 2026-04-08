@@ -9,8 +9,7 @@ export function getUrl(
   return `${TMDB_ENDPOINT}/${endpoint}?api_key=${API_KEY}&with_genres=${id}&name=${genre}&page=${page}`;
 }
 
-// TODO: Change the function name
-export function getUrl2(endpoint: string, page: number | string): string {
+export function getPagedUrl(endpoint: string, page: number | string): string {
   return `${TMDB_ENDPOINT}/${endpoint}?api_key=${API_KEY}&page=${page}`;
 }
 
@@ -32,6 +31,14 @@ export function getTvDetail(id: string | number): string {
 
 export function getTvCasts(id: string | number): string {
   return `${TMDB_ENDPOINT}/tv/${id}/credits?api_key=${API_KEY}`;
+}
+
+export function getMovieVideos(id: string | number): string {
+  return `${TMDB_ENDPOINT}/movie/${id}/videos?api_key=${API_KEY}`;
+}
+
+export function getTvVideos(id: string | number): string {
+  return `${TMDB_ENDPOINT}/tv/${id}/videos?api_key=${API_KEY}`;
 }
 
 export function getTrending(mediaType: string, timeWindow: string): string {
@@ -61,6 +68,14 @@ export function searchTv(query: string, page: number | string): string {
   return `${TMDB_ENDPOINT}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(
     query
   )}&page=${page}`;
+}
+
+export function getMovieRecommendations(id: string | number): string {
+  return `${TMDB_ENDPOINT}/movie/${id}/recommendations?api_key=${API_KEY}&language=es-ES`;
+}
+
+export function getTvRecommendations(id: string | number): string {
+  return `${TMDB_ENDPOINT}/tv/${id}/recommendations?api_key=${API_KEY}&language=es-ES`;
 }
 
 // Trending

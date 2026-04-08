@@ -1,10 +1,11 @@
-import type { ReactElement } from "react";
+import type React from "react";
 
 /** A media item returned by the TMDB API (movie or TV show). */
 export interface TMDBMediaItem {
   adult: boolean;
   backdrop_path: string | null;
   first_air_date?: string;
+  genre_ids?: number[];
   id: number;
   media_type?: "movie" | "tv" | "person";
   original_name?: string;
@@ -35,9 +36,7 @@ export interface TMDBLanguage {
 }
 
 /** Component type accepted by renderResults / renderResultsSlider. */
-export type MediaCardComponent = (
-  props: Omit<MediaCardProps, "key">
-) => ReactElement;
+export type MediaCardComponent = React.ComponentType<Omit<MediaCardProps, "key">>;
 
 /** Motion animation settings (initial + animate + transition). */
 export interface MotionAnimationSettings {
