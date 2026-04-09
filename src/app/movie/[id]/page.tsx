@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 
+import AlertButtonWrapper from "@/components/AlertButtonWrapper";
 import FilmCasts from "@/components/FilmCasts";
 import Recommendations from "@/components/Recommendations";
 import FilmGenres from "@/components/FilmGenres";
@@ -100,6 +101,12 @@ export default async function Movie({
         <div className="flex-1 space-y-4">
           <FilmHeading tagline={detail.tagline} title={detail.title}>
             <WatchlistButton
+              id={detail.id}
+              media_type="movie"
+              poster_path={detail.poster_path ?? ""}
+              title={detail.title}
+            />
+            <AlertButtonWrapper
               id={detail.id}
               media_type="movie"
               poster_path={detail.poster_path ?? ""}

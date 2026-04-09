@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import { useAuthPreferences } from "@/hooks/useAuthPreferences";
+import { useNotificationChecker } from "@/hooks/useNotificationChecker";
 import type {
   JWDayResponse,
   JWPackage,
@@ -121,6 +122,7 @@ export default function NewPageContent() {
   const [showFilters, setShowFilters] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { country, platforms } = useAuthPreferences();
+  const { checkProviders } = useNotificationChecker();
 
   // Load JustWatch streaming packages for the country (immutable — rarely changes)
   const { data: packagesData } = useSWRImmutable<JWPackagesResponse>(
@@ -332,6 +334,15 @@ export default function NewPageContent() {
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [loadMore]);
+
+  // Check for notifications when new day data loads
+  useEffect(() => {
+    if (days.length === 0) return;
+    const allProviders = days.flatMap((day) => day.providers);
+    if (allProviders.length > 0) {
+      checkProviders(allProviders);
+    }
+  }, [days, checkProviders]);
 
   const hasActiveFilters = Object.values(filters).some(Boolean);
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
