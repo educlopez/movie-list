@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import { usePreferences } from "@/stores/preferences";
+import { useAuthPreferences } from "@/hooks/useAuthPreferences";
 import type {
   JWDayResponse,
   JWPackage,
@@ -120,7 +120,7 @@ export default function NewPageContent() {
   const [showProviders, setShowProviders] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const { country, platforms } = usePreferences();
+  const { country, platforms } = useAuthPreferences();
 
   // Load JustWatch streaming packages for the country (immutable — rarely changes)
   const { data: packagesData } = useSWRImmutable<JWPackagesResponse>(

@@ -8,7 +8,7 @@ import {
 } from "@headlessui/react";
 import { useState } from "react";
 import useSWR from "swr";
-import { usePreferences } from "@/stores/preferences";
+import { useAuthPreferences } from "@/hooks/useAuthPreferences";
 import type { AvailablePlatformsData } from "@/types/providers";
 import { fetcher } from "@/utils";
 import { COUNTRIES } from "@/utils/country";
@@ -16,7 +16,7 @@ import PlatformGrid from "./PlatformGrid";
 
 export default function PlatformSelector() {
   const [isOpen, setIsOpen] = useState(false);
-  const { country, platforms, setCountry, togglePlatform } = usePreferences();
+  const { country, platforms, setCountry, togglePlatform } = useAuthPreferences();
 
   const { data } = useSWR<AvailablePlatformsData>(
     isOpen ? `/api/providers?country=${country}&type=movie` : null,

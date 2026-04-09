@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import { usePreferences } from "@/stores/preferences";
+import { useAuthPreferences } from "@/hooks/useAuthPreferences";
 import type { WatchProvidersData } from "@/types/providers";
 import { fetcher } from "@/utils";
 import AlternativeCountries from "./AlternativeCountries";
@@ -13,7 +13,7 @@ interface WatchProvidersProps {
 }
 
 export default function WatchProviders({ id, type }: WatchProvidersProps) {
-  const { country, platforms } = usePreferences();
+  const { country, platforms } = useAuthPreferences();
 
   const { data, error } = useSWR<WatchProvidersData>(
     `/api/${type}/${id}/providers?country=${country}`,
