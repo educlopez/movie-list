@@ -72,13 +72,13 @@ export default function NotificationBell() {
   return (
     <div className="relative">
       <button
-        className="relative flex h-8 w-8 items-center justify-center rounded-full text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+        className="relative flex h-8 w-8 items-center justify-center rounded-lg text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
         onClick={() => setShowPanel(!showPanel)}
         type="button"
         aria-label="Notificaciones"
       >
         <svg
-          className="h-5 w-5"
+          className="h-4 w-4"
           fill="none"
           stroke="currentColor"
           strokeWidth={1.5}

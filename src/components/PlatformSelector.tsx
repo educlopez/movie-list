@@ -27,12 +27,12 @@ export default function PlatformSelector() {
     <>
       <button
         aria-label="Configurar plataformas"
-        className="flex items-center justify-center rounded-lg p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
         onClick={() => setIsOpen(true)}
         type="button"
       >
         <svg
-          className="h-5 w-5"
+          className="h-4 w-4"
           fill="none"
           stroke="currentColor"
           strokeWidth={1.5}
