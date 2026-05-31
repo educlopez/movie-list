@@ -3,7 +3,11 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { Resend } from "resend";
 import { db } from "@/db";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Optional: only init Resend when an API key is configured so the build
+// doesn't crash (the SDK throws "Missing API key" in its constructor).
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "sqlite" }),
@@ -21,6 +25,12 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
+      if (!resend) {
+        console.warn(
+          "RESEND_API_KEY not set — skipping verification email send",
+        );
+        return;
+      }
       await resend.emails.send({
         from: "Movielist <onboarding@resend.dev>",
         to: user.email,
