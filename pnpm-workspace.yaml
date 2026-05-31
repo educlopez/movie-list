@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: set this to true or false
+  sharp: set this to true or false
+# SECURITY: supply-chain hardening (npm-security-best-practices)
+# cooldown (minimum-release-age) configured in .npmrc
+blockExoticSubdeps: true
