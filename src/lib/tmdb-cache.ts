@@ -13,14 +13,18 @@ const cache = new Map<string, { data: TmdbCacheEntry; ts: number }>();
 
 function get(key: string): TmdbCacheEntry | null {
   const entry = cache.get(key);
-  if (entry && Date.now() - entry.ts < TMDB_CACHE_TTL) return entry.data;
+  if (entry && Date.now() - entry.ts < TMDB_CACHE_TTL) {
+    return entry.data;
+  }
   return null;
 }
 
 function set(key: string, data: TmdbCacheEntry) {
   if (cache.size >= TMDB_CACHE_MAX) {
     const firstKey = cache.keys().next().value;
-    if (firstKey) cache.delete(firstKey);
+    if (firstKey) {
+      cache.delete(firstKey);
+    }
   }
   cache.set(key, { data, ts: Date.now() });
 }
@@ -30,7 +34,7 @@ function set(key: string, data: TmdbCacheEntry) {
  * Uses an in-memory LRU cache to avoid duplicate TMDB API calls.
  */
 export async function enrichWithTmdb(
-  items: Array<Record<string, unknown>>,
+  items: Record<string, unknown>[],
   maxItems = 50
 ) {
   const uniqueItems = new Map<string, Record<string, unknown>>();

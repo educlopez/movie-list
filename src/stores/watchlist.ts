@@ -4,37 +4,37 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface WatchlistItem {
+  added_at: number;
   id: number;
   media_type: "movie" | "tv";
-  title: string;
   poster_path: string;
-  added_at: number;
+  title: string;
 }
 
 interface WatchlistState {
-  items: WatchlistItem[];
   addItem: (item: Omit<WatchlistItem, "added_at">) => void;
-  removeItem: (id: number, media_type: "movie" | "tv") => void;
   isInWatchlist: (id: number, media_type: "movie" | "tv") => boolean;
+  items: WatchlistItem[];
+  removeItem: (id: number, media_type: "movie" | "tv") => void;
   toggleItem: (item: Omit<WatchlistItem, "added_at">) => void;
 }
 
 export const useWatchlist = create<WatchlistState>()(
   persist(
     (set, get) => ({
-      items: [],
       addItem: (item) =>
         set({
           items: [...get().items, { ...item, added_at: Date.now() }],
         }),
+      isInWatchlist: (id, media_type) =>
+        get().items.some((i) => i.id === id && i.media_type === media_type),
+      items: [],
       removeItem: (id, media_type) =>
         set({
           items: get().items.filter(
             (i) => !(i.id === id && i.media_type === media_type)
           ),
         }),
-      isInWatchlist: (id, media_type) =>
-        get().items.some((i) => i.id === id && i.media_type === media_type),
       toggleItem: (item) => {
         const { isInWatchlist, addItem, removeItem } = get();
         if (isInWatchlist(item.id, item.media_type)) {

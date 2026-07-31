@@ -4,7 +4,7 @@ import { API_KEY, TMDB_ENDPOINT } from "@/utils";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type") || "movie";
-  const mode = searchParams.get("mode") || "new";
+  const _mode = searchParams.get("mode") || "new";
   const date =
     searchParams.get("date") || new Date().toISOString().slice(0, 10);
   const providers = searchParams.get("providers") || "";
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
         provider_id: number;
         provider_name: string;
         logo_path: string;
-        items: Array<Record<string, unknown>>;
+        items: Record<string, unknown>[];
       }
     > = {};
 
@@ -44,24 +44,24 @@ export async function GET(request: NextRequest) {
         const res = await fetch(url);
         const data = await res.json();
         return (data.results || []).map((item: Record<string, unknown>) => ({
+          genre_ids: item.genre_ids || [],
           id: item.id,
-          title: item.title || item.name || "",
           media_type: mediaType,
           poster_path: item.poster_path,
           release_date: (item.release_date ||
             item.first_air_date ||
             "") as string,
+          title: item.title || item.name || "",
           vote_average: (item.vote_average || 0) as number,
-          genre_ids: item.genre_ids || [],
         }));
       });
       const results = (await Promise.all(fetches)).flat();
       if (results.length > 0) {
-        providerResults["all"] = {
+        providerResults.all = {
+          items: results,
+          logo_path: "",
           provider_id: 0,
           provider_name: "All Platforms",
-          logo_path: "",
-          items: results,
         };
       }
     } else {
@@ -74,13 +74,13 @@ export async function GET(request: NextRequest) {
       const providerMap: Record<string, { name: string; logo: string }> = {};
       for (const p of providerInfoData.results || []) {
         providerMap[p.provider_id.toString()] = {
-          name: p.provider_name,
           logo: p.logo_path,
+          name: p.provider_name,
         };
       }
 
       const perProviderFetches = providerIds.map(async (providerId) => {
-        const allItems: Array<Record<string, unknown>> = [];
+        const allItems: Record<string, unknown>[] = [];
 
         for (const mediaType of types) {
           const dateField =
@@ -100,29 +100,29 @@ export async function GET(request: NextRequest) {
 
           for (const item of data.results || []) {
             allItems.push({
+              genre_ids: item.genre_ids || [],
               id: item.id,
-              title: item.title || item.name || "",
               media_type: mediaType,
               poster_path: item.poster_path,
               release_date: (item.release_date ||
                 item.first_air_date ||
                 "") as string,
+              title: item.title || item.name || "",
               vote_average: (item.vote_average || 0) as number,
-              genre_ids: item.genre_ids || [],
             });
           }
         }
 
         if (allItems.length > 0) {
           const info = providerMap[providerId] || {
-            name: `Provider ${providerId}`,
             logo: "",
+            name: `Provider ${providerId}`,
           };
           providerResults[providerId] = {
+            items: allItems,
+            logo_path: info.logo,
             provider_id: Number(providerId),
             provider_name: info.name,
-            logo_path: info.logo,
-            items: allItems,
           };
         }
       });

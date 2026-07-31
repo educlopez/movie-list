@@ -41,8 +41,8 @@ export const renderResults = (
   array: TMDBMediaItem[],
   Component: MediaCardComponent,
   media_type?: string
-) => {
-  return array.map((item) => (
+) =>
+  array.map((item) => (
     <Component
       category={item.media_type || media_type || ""}
       id={item.id}
@@ -57,14 +57,13 @@ export const renderResults = (
       year={item.release_date || item.first_air_date}
     />
   ));
-};
 
 export const renderResultsSlider = (
   array: TMDBMediaItem[],
   Component: MediaCardComponent,
   media_type?: string
-) => {
-  return array.map((item) => (
+) =>
+  array.map((item) => (
     <Component
       category={item.media_type || media_type || ""}
       id={item.id}
@@ -79,8 +78,6 @@ export const renderResultsSlider = (
       year={item.release_date || item.first_air_date}
     />
   ));
-};
 
-export const sliceArray = <T,>(arr: T[], limit: number): T[] => {
-  return arr.slice(0, limit);
-};
+export const sliceArray = <T,>(arr: T[], limit: number): T[] =>
+  arr.slice(0, limit);

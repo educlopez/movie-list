@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import MovieCard from "@/components/MovieCard";
 import { useAuthWatchlist } from "@/hooks/useAuthWatchlist";
 import type { WatchlistItem } from "@/stores/watchlist";
-import MovieCard from "@/components/MovieCard";
 
 type FilterType = "all" | "movie" | "tv";
 type SortType = "recent" | "title";
@@ -44,6 +44,7 @@ export default function WatchlistContent() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <svg
+          aria-hidden="true"
           className="mb-4 h-16 w-16 text-zinc-300 dark:text-zinc-600"
           fill="none"
           stroke="currentColor"
@@ -57,7 +58,7 @@ export default function WatchlistContent() {
             strokeLinejoin="round"
           />
         </svg>
-        <p className="text-lg font-medium text-zinc-500 dark:text-zinc-400">
+        <p className="font-medium text-lg text-zinc-500 dark:text-zinc-400">
           Tu lista esta vacia
         </p>
         <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
@@ -75,7 +76,7 @@ export default function WatchlistContent() {
         <div className="flex gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-800">
           {filterTabs.map((tab) => (
             <button
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+              className={`rounded-md px-3 py-1.5 font-medium text-sm transition ${
                 filter === tab.value
                   ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-700 dark:text-white"
                   : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
@@ -132,6 +133,7 @@ export default function WatchlistContent() {
                 type="button"
               >
                 <svg
+                  aria-hidden="true"
                   className="h-3.5 w-3.5"
                   fill="none"
                   stroke="currentColor"

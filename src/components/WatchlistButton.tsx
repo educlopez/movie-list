@@ -5,8 +5,8 @@ import { useAuthWatchlist } from "@/hooks/useAuthWatchlist";
 interface WatchlistButtonProps {
   id: number;
   media_type: "movie" | "tv";
-  title: string;
   poster_path: string;
+  title: string;
 }
 
 export default function WatchlistButton({
@@ -22,10 +22,11 @@ export default function WatchlistButton({
     <button
       aria-label={inList ? "Remove from watchlist" : "Add to watchlist"}
       className="group/btn inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-      onClick={() => toggleItem({ id, media_type, title, poster_path })}
+      onClick={() => toggleItem({ id, media_type, poster_path, title })}
       type="button"
     >
       <svg
+        aria-hidden="true"
         className={`h-4 w-4 transition-colors ${
           inList
             ? "fill-amber-500 text-amber-500"

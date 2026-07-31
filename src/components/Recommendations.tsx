@@ -1,14 +1,14 @@
 "use client";
 
 import useSWRImmutable from "swr/immutable";
-import { useDragScroll } from "@/hooks/useDragScroll";
 import MovieCard from "@/components/MovieCard";
+import { useDragScroll } from "@/hooks/useDragScroll";
 import type { TMDBMediaItem } from "@/types/tmdb";
 import { fetcher } from "@/utils";
 
 interface RecommendationsProps {
-  mediaType: "movie" | "tv";
   id: number;
+  mediaType: "movie" | "tv";
 }
 
 export default function Recommendations({

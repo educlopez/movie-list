@@ -26,9 +26,9 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(JUSTWATCH_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: PACKAGES_QUERY, variables: { country } }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
     });
 
     const json = await res.json();
@@ -36,11 +36,11 @@ export async function GET(request: NextRequest) {
 
     const mapped = packages
       .map((p: Record<string, unknown>) => ({
-        packageId: p.packageId,
         clearName: p.clearName,
-        shortName: p.shortName,
         icon: jwIcon(p.icon as string),
         monetizationTypes: p.monetizationTypes || [],
+        packageId: p.packageId,
+        shortName: p.shortName,
       }))
       .sort((a: Record<string, unknown>, b: Record<string, unknown>) =>
         (a.clearName as string).localeCompare(b.clearName as string)
@@ -52,10 +52,11 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.json(
-      { packages: streaming, allPackages: mapped },
+      { allPackages: mapped, packages: streaming },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+          "Cache-Control":
+            "public, s-maxage=3600, stale-while-revalidate=86400",
         },
       }
     );

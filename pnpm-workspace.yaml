@@ -1,0 +1,4 @@
+allowBuilds:
+  # Both ship prebuilt binaries fetched by their install script.
+  esbuild: true
+  sharp: true

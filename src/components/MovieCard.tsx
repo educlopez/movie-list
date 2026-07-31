@@ -3,10 +3,10 @@
 import { FilmIcon, MonitorIcon } from "@iconicicons/react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { memo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
+import { memo, useState } from "react";
 import { useAuthWatchlist } from "@/hooks/useAuthWatchlist";
+import { TMDB_IMAGE_THUMB_ENDPOINT } from "@/utils";
 import RatingBadge from "./RatingBadge";
 
 interface MovieCardProps {
@@ -53,7 +53,7 @@ export default memo(function MovieCard({
         <div className="relative">
           <div
             className={`overflow-hidden rounded-lg bg-zinc-200 dark:bg-zinc-800 ${
-              !imageLoaded ? "animate-pulse" : ""
+              imageLoaded ? "" : "animate-pulse"
             }`}
           >
             <Image
@@ -86,6 +86,7 @@ export default memo(function MovieCard({
           {inWatchlist && (
             <div className="absolute right-1.5 bottom-1.5 flex items-center rounded-md bg-amber-500/90 p-1 backdrop-blur-sm">
               <svg
+                aria-hidden="true"
                 className="h-3 w-3 fill-white text-white"
                 fill="currentColor"
                 stroke="currentColor"
@@ -116,9 +117,9 @@ export default memo(function MovieCard({
         <p className="mt-1.5 line-clamp-2 font-medium text-sm text-zinc-800 dark:text-zinc-200">
           {title}
         </p>
-        {yearText && (
+        {yearText ? (
           <p className="text-xs text-zinc-500 dark:text-zinc-400">{yearText}</p>
-        )}
+        ) : null}
       </div>
     </motion.li>
   );

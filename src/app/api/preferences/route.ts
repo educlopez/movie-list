@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { userPreference } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -43,9 +43,9 @@ export async function PUT(request: NextRequest) {
 
   if (existing.length === 0) {
     await db.insert(userPreference).values({
-      userId: session.user.id,
       country,
       platforms: JSON.stringify(platforms),
+      userId: session.user.id,
     });
   } else {
     await db

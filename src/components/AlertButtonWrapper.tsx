@@ -9,8 +9,8 @@ import AlertButton from "./AlertButton";
 interface AlertButtonWrapperProps {
   id: number;
   media_type: "movie" | "tv";
-  title: string;
   poster_path: string;
+  title: string;
 }
 
 export default function AlertButtonWrapper({
@@ -29,9 +29,7 @@ export default function AlertButtonWrapper({
   // Check if the movie/show is available on any of the user's streaming platforms
   const isAvailableOnMyPlatforms =
     !!data &&
-    data.flatrate.some((provider) =>
-      platforms.includes(provider.provider_id)
-    );
+    data.flatrate.some((provider) => platforms.includes(provider.provider_id));
 
   return (
     <AlertButton

@@ -7,13 +7,13 @@ import { useWatchlist } from "@/stores/watchlist";
 import { fetcher } from "@/utils";
 
 interface WatchlistDbItem {
-  id: number;
-  userId: string;
-  tmdbId: number;
-  mediaType: "movie" | "tv";
-  title: string;
-  posterPath: string;
   addedAt: string;
+  id: number;
+  mediaType: "movie" | "tv";
+  posterPath: string;
+  title: string;
+  tmdbId: number;
+  userId: string;
 }
 
 export function useAuthWatchlist() {
@@ -30,15 +30,17 @@ export function useAuthWatchlist() {
 
   // Merge localStorage items to DB on first login
   useEffect(() => {
-    if (!isLoggedIn || hasMerged.current) return;
+    if (!isLoggedIn || hasMerged.current) {
+      return;
+    }
     hasMerged.current = true;
 
     const localItems = localStore.items;
     if (localItems.length > 0) {
       fetch("/api/watchlist/merge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(localItems),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       }).then(() => mutate());
     }
   }, [isLoggedIn, localStore.items, mutate]);
@@ -55,14 +57,14 @@ export function useAuthWatchlist() {
         return;
       }
       await fetch("/api/watchlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tmdbId: item.id,
           mediaType: item.media_type,
-          title: item.title,
           posterPath: item.poster_path,
+          title: item.title,
+          tmdbId: item.id,
         }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       });
       mutate();
     },
@@ -76,9 +78,9 @@ export function useAuthWatchlist() {
         return;
       }
       await fetch("/api/watchlist", {
-        method: "DELETE",
+        body: JSON.stringify({ mediaType, tmdbId: id }),
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tmdbId: id, mediaType }),
+        method: "DELETE",
       });
       mutate();
     },
@@ -116,13 +118,13 @@ export function useAuthWatchlist() {
   // Normalize items format for consumers
   const items = isLoggedIn
     ? (dbItems ?? []).map((i) => ({
+        added_at: new Date(i.addedAt).getTime(),
         id: i.tmdbId,
         media_type: i.mediaType,
-        title: i.title,
         poster_path: i.posterPath,
-        added_at: new Date(i.addedAt).getTime(),
+        title: i.title,
       }))
     : localStore.items;
 
-  return { items, addItem, removeItem, isInWatchlist, toggleItem };
+  return { addItem, isInWatchlist, items, removeItem, toggleItem };
 }

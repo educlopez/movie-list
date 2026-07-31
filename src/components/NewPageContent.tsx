@@ -5,12 +5,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWRImmutable from "swr/immutable";
 import { useAuthPreferences } from "@/hooks/useAuthPreferences";
 import { useNotificationChecker } from "@/hooks/useNotificationChecker";
+import type { AvailablePlatformsData } from "@/types/providers";
 import type {
   JWDayResponse,
   JWPackage,
   JWPackagesResponse,
 } from "@/types/tmdb";
-import type { AvailablePlatformsData } from "@/types/providers";
 import { fetcher } from "@/utils";
 import CardSkeleton from "./CardSkeleton";
 import TimelineGroup from "./TimelineGroup";
@@ -30,13 +30,17 @@ function getDateLabel(dateStr: string): string {
   const yesterday = new Date(Date.now() - 86_400_000)
     .toISOString()
     .slice(0, 10);
-  if (dateStr === today) return "Hoy";
-  if (dateStr === yesterday) return "Ayer";
-  const d = new Date(dateStr + "T00:00:00");
+  if (dateStr === today) {
+    return "Hoy";
+  }
+  if (dateStr === yesterday) {
+    return "Ayer";
+  }
+  const d = new Date(`${dateStr}T00:00:00`);
   return d.toLocaleDateString("es-ES", {
-    weekday: "short",
-    month: "short",
     day: "numeric",
+    month: "short",
+    weekday: "short",
     year: "numeric",
   });
 }
@@ -52,47 +56,47 @@ const PROVIDER_CATEGORIES: {
   label: string;
   filter: (p: JWPackage) => boolean;
 }[] = [
-  { key: "all", label: "Ver Todo", filter: () => true },
-  { key: "mine", label: "Mis Servicios", filter: () => true },
+  { filter: () => true, key: "all", label: "Ver Todo" },
+  { filter: () => true, key: "mine", label: "Mis Servicios" },
   {
+    filter: (p) => p.monetizationTypes?.includes("FLATRATE") ?? false,
     key: "flatrate",
     label: "Suscripciones",
-    filter: (p) => p.monetizationTypes?.includes("FLATRATE") ?? false,
   },
   {
-    key: "buy_rent",
-    label: "Comprar/Alquilar",
     filter: (p) =>
       (p.monetizationTypes?.includes("BUY") ||
         p.monetizationTypes?.includes("RENT")) ??
       false,
+    key: "buy_rent",
+    label: "Comprar/Alquilar",
   },
   {
+    filter: (p) => p.monetizationTypes?.includes("FREE") ?? false,
     key: "free",
     label: "Gratis",
-    filter: (p) => p.monetizationTypes?.includes("FREE") ?? false,
   },
   {
+    filter: (p) => p.monetizationTypes?.includes("CINEMA") ?? false,
     key: "cinema",
     label: "Cine",
-    filter: (p) => p.monetizationTypes?.includes("CINEMA") ?? false,
   },
 ];
 
 interface Filters {
+  ageRating: string;
+  duration: string;
   genre: string;
   rating: string;
   year: string;
-  duration: string;
-  ageRating: string;
 }
 
 const EMPTY_FILTERS: Filters = {
+  ageRating: "",
+  duration: "",
   genre: "",
   rating: "",
   year: "",
-  duration: "",
-  ageRating: "",
 };
 
 const MODE_TABS = [
@@ -143,7 +147,9 @@ export default function NewPageContent() {
 
   // Build set of selected provider names from TMDB data
   const selectedProviderNames = useMemo(() => {
-    if (platforms.length === 0 || !tmdbPlatformsData) return null;
+    if (platforms.length === 0 || !tmdbPlatformsData) {
+      return null;
+    }
     const selected = tmdbPlatformsData.platforms.filter((p) =>
       platforms.includes(p.provider_id)
     );
@@ -152,7 +158,9 @@ export default function NewPageContent() {
 
   // User's selected JW packages
   const myPackages = useMemo(() => {
-    if (!selectedProviderNames) return streamingPackages;
+    if (!selectedProviderNames) {
+      return streamingPackages;
+    }
     return streamingPackages.filter((p) =>
       selectedProviderNames.has(p.clearName.toLowerCase())
     );
@@ -160,8 +168,12 @@ export default function NewPageContent() {
 
   // Packages filtered by the current provider category
   const categoryPackages = useMemo(() => {
-    if (providerCategory === "mine") return myPackages;
-    if (providerCategory === "all") return allJwPackages;
+    if (providerCategory === "mine") {
+      return myPackages;
+    }
+    if (providerCategory === "all") {
+      return allJwPackages;
+    }
     const cat = PROVIDER_CATEGORIES.find((c) => c.key === providerCategory);
     return cat ? allJwPackages.filter(cat.filter) : allJwPackages;
   }, [providerCategory, allJwPackages, myPackages]);
@@ -186,10 +198,13 @@ export default function NewPageContent() {
 
   // Active provider shortNames for filtering API results
   const activeProviderNames = useMemo(() => {
-    if (selectedPackage) return null; // Single package selected, API handles it
-    if (providerCategory === "all") return null; // Show everything
-    const pkgs =
-      providerCategory === "mine" ? myPackages : categoryPackages;
+    if (selectedPackage) {
+      return null; // Single package selected, API handles it
+    }
+    if (providerCategory === "all") {
+      return null; // Show everything
+    }
+    const pkgs = providerCategory === "mine" ? myPackages : categoryPackages;
     return new Set(pkgs.map((p) => p.clearName.toLowerCase()));
   }, [selectedPackage, providerCategory, myPackages, categoryPackages]);
 
@@ -223,7 +238,7 @@ export default function NewPageContent() {
 
       const date = getDateOffset(new Date(), -offset);
 
-      const params = new URLSearchParams({ date, country });
+      const params = new URLSearchParams({ country, date });
 
       if (selectedPackage) {
         params.set("packages", selectedPackage);
@@ -272,8 +287,12 @@ export default function NewPageContent() {
       if (mode === "upcoming") {
         // Upcoming mode returns all results in one call
         const day = await fetchDay(0);
-        if (cancelled) return;
-        if (day.providers?.length > 0) results.push(day);
+        if (cancelled) {
+          return;
+        }
+        if (day.providers?.length > 0) {
+          results.push(day);
+        }
         setDays(results);
         setDayOffset(1);
         setHasMore(false);
@@ -284,13 +303,19 @@ export default function NewPageContent() {
           fetchDay(1),
           fetchDay(2),
         ]);
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         for (const day of dayResults) {
-          if (day.providers?.length > 0) results.push(day);
+          if (day.providers?.length > 0) {
+            results.push(day);
+          }
         }
         setDays(results);
         setDayOffset(3);
-        if (results.length === 0) setHasMore(false);
+        if (results.length === 0) {
+          setHasMore(false);
+        }
       }
       setIsLoading(false);
     })();
@@ -301,7 +326,9 @@ export default function NewPageContent() {
   }, [fetchDay, mode]);
 
   const loadMore = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoading || !hasMore) {
+      return;
+    }
     setIsLoading(true);
 
     let found = false;
@@ -317,17 +344,23 @@ export default function NewPageContent() {
     }
 
     setDayOffset(offset);
-    if (!found || offset > 30) setHasMore(false);
+    if (!found || offset > 30) {
+      setHasMore(false);
+    }
     setIsLoading(false);
   }, [isLoading, hasMore, dayOffset, fetchDay]);
 
   // Infinite scroll
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    if (!sentinel) {
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) loadMore();
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
       },
       { rootMargin: "300px" }
     );
@@ -337,7 +370,9 @@ export default function NewPageContent() {
 
   // Check for notifications when new day data loads
   useEffect(() => {
-    if (days.length === 0) return;
+    if (days.length === 0) {
+      return;
+    }
     const allProviders = days.flatMap((day) => day.providers);
     if (allProviders.length > 0) {
       checkProviders(allProviders);
@@ -352,10 +387,10 @@ export default function NewPageContent() {
   return (
     <div className="space-y-4">
       {/* Row 1: Mode tabs */}
-      <div className="flex gap-1 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="flex gap-1 border-zinc-200 border-b dark:border-zinc-700">
         {MODE_TABS.map(({ key, label }) => (
           <button
-            className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+            className={`-mb-px border-b-2 px-4 py-2.5 font-medium text-sm transition-colors ${
               mode === key
                 ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
                 : "border-transparent text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
@@ -375,7 +410,7 @@ export default function NewPageContent() {
         <div className="flex items-center rounded-full bg-zinc-100 p-1 dark:bg-zinc-800">
           {MEDIA_TYPE_TABS.map(({ key, label }) => (
             <button
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              className={`rounded-full px-4 py-1.5 font-medium text-sm transition-colors ${
                 mediaType === key
                   ? "bg-emerald-500 text-white shadow-sm"
                   : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -401,7 +436,9 @@ export default function NewPageContent() {
               }`}
               onClick={() => {
                 setShowProviders(!showProviders);
-                if (!showProviders) setShowFilters(false);
+                if (!showProviders) {
+                  setShowFilters(false);
+                }
               }}
               type="button"
             >
@@ -419,7 +456,7 @@ export default function NewPageContent() {
                 ))}
               </div>
               {myPackages.length > 4 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white">
+                <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 font-bold text-[10px] text-white">
                   {myPackages.length}
                 </span>
               )}
@@ -428,18 +465,21 @@ export default function NewPageContent() {
 
           {/* Filters button */}
           <button
-            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-medium text-sm transition-colors ${
               showFilters || hasActiveFilters
                 ? "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                 : "border-zinc-200 text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-white"
             }`}
             onClick={() => {
               setShowFilters(!showFilters);
-              if (!showFilters) setShowProviders(false);
+              if (!showFilters) {
+                setShowProviders(false);
+              }
             }}
             type="button"
           >
             <svg
+              aria-hidden="true"
               className="h-4 w-4"
               fill="none"
               stroke="currentColor"
@@ -454,7 +494,7 @@ export default function NewPageContent() {
             </svg>
             Filtros
             {hasActiveFilters && (
-              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white">
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 font-bold text-[10px] text-white">
                 {activeFilterCount}
               </span>
             )}
@@ -463,17 +503,18 @@ export default function NewPageContent() {
       </div>
 
       {/* Expandable provider panel */}
-      {showProviders && (
+      {showProviders ? (
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
           {/* Provider category tabs */}
           <div className="scrollbar-none mb-3 flex items-center gap-2 overflow-x-auto">
             {PROVIDER_CATEGORIES.map((cat) => {
               const count = categoryCounts[cat.key] || 0;
-              if (count === 0 && cat.key !== "all" && cat.key !== "mine")
+              if (count === 0 && cat.key !== "all" && cat.key !== "mine") {
                 return null;
+              }
               return (
                 <button
-                  className={`flex-none rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                  className={`flex-none rounded-full px-3 py-1.5 font-medium text-sm transition-colors ${
                     providerCategory === cat.key
                       ? "bg-emerald-500 text-white"
                       : "bg-white text-zinc-600 hover:bg-zinc-100 dark:bg-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600"
@@ -508,7 +549,7 @@ export default function NewPageContent() {
                 }
                 type="button"
               >
-                {p.icon && (
+                {p.icon ? (
                   <Image
                     alt={p.clearName}
                     className="rounded"
@@ -517,7 +558,7 @@ export default function NewPageContent() {
                     unoptimized
                     width={24}
                   />
-                )}
+                ) : null}
                 <span className="font-medium text-xs text-zinc-700 dark:text-zinc-300">
                   {p.clearName}
                 </span>
@@ -525,10 +566,10 @@ export default function NewPageContent() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Expandable filters panel */}
-      {showFilters && (
+      {showFilters ? (
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800/50">
           <div className="flex flex-wrap items-center gap-3">
             <FilterSelect
@@ -540,8 +581,8 @@ export default function NewPageContent() {
               label="Ano de estreno"
               onChange={(v) => setFilters({ ...filters, year: v })}
               options={years.map((y) => ({
-                value: y.toString(),
                 label: y.toString(),
+                value: y.toString(),
               }))}
               value={filters.year}
             />
@@ -549,9 +590,9 @@ export default function NewPageContent() {
               label="Calificacion"
               onChange={(v) => setFilters({ ...filters, rating: v })}
               options={[
-                { value: "7", label: "7+" },
-                { value: "6", label: "6+" },
-                { value: "5", label: "5+" },
+                { label: "7+", value: "7" },
+                { label: "6+", value: "6" },
+                { label: "5+", value: "5" },
               ]}
               value={filters.rating}
             />
@@ -559,9 +600,9 @@ export default function NewPageContent() {
               label="Duracion"
               onChange={(v) => setFilters({ ...filters, duration: v })}
               options={[
-                { value: "short", label: "< 1h" },
-                { value: "medium", label: "1-2h" },
-                { value: "long", label: "> 2h" },
+                { label: "< 1h", value: "short" },
+                { label: "1-2h", value: "medium" },
+                { label: "> 2h", value: "long" },
               ]}
               value={filters.duration}
             />
@@ -569,11 +610,11 @@ export default function NewPageContent() {
               label="Clasificacion"
               onChange={(v) => setFilters({ ...filters, ageRating: v })}
               options={[
-                { value: "all", label: "Todos los publicos" },
-                { value: "7", label: "+7" },
-                { value: "12", label: "+12" },
-                { value: "16", label: "+16" },
-                { value: "18", label: "+18" },
+                { label: "Todos los publicos", value: "all" },
+                { label: "+7", value: "7" },
+                { label: "+12", value: "12" },
+                { label: "+16", value: "16" },
+                { label: "+18", value: "18" },
               ]}
               value={filters.ageRating}
             />
@@ -584,6 +625,7 @@ export default function NewPageContent() {
                 type="button"
               >
                 <svg
+                  aria-hidden="true"
                   className="h-3.5 w-3.5"
                   fill="none"
                   stroke="currentColor"
@@ -601,7 +643,7 @@ export default function NewPageContent() {
             )}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Content */}
       {days.length === 0 && isLoading && (
@@ -659,20 +701,20 @@ function FilterSelect({
 }) {
   // Genre options are fetched dynamically if no options provided (immutable)
   const { data: genreData } = useSWRImmutable(
-    !options ? "/api/genres?type=movie" : null,
+    options ? null : "/api/genres?type=movie",
     fetcher
   );
 
   const resolvedOptions = options
     ? options
-    : ((genreData as { genres?: { id: number; name: string }[] })?.genres || []).map(
-        (g) => ({ value: g.id.toString(), label: g.name })
-      );
+    : (
+        (genreData as { genres?: { id: number; name: string }[] })?.genres || []
+      ).map((g) => ({ label: g.name, value: g.id.toString() }));
 
   return (
     <div className="relative">
       <select
-        className={`appearance-none rounded-lg border bg-white py-1.5 pr-7 pl-3 text-sm font-medium transition-colors ${
+        className={`appearance-none rounded-lg border bg-white py-1.5 pr-7 pl-3 font-medium text-sm transition-colors ${
           value
             ? "border-emerald-500 text-emerald-600 dark:text-emerald-400"
             : "border-zinc-200 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
@@ -688,17 +730,14 @@ function FilterSelect({
         ))}
       </select>
       <svg
-        className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400"
         fill="none"
         stroke="currentColor"
         strokeWidth={2}
         viewBox="0 0 24 24"
       >
-        <path
-          d="M19 9l-7 7-7-7"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        <path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
   );

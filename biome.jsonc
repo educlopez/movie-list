@@ -5,9 +5,23 @@
     "ultracite/biome/next",
     "ultracite/biome/react"
   ],
+
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedAttributes": "off"
+      }
+    }
+  },
   "linter": {
     "rules": {
+      "suspicious": {
+        // Flags `if (!ref.current)` guards as always truthy — it doesn't model
+        // mutable refs, and removing those guards breaks the code.
+        "noUnnecessaryConditions": "off"
+      },
       "style": {
+        "noIncrementDecrement": "off",
         // Project uses PascalCase React component filenames — standard in Next.js/React
         "useFilenamingConvention": "off",
         // Nested ternaries are acceptable for concise conditional rendering
@@ -23,12 +37,46 @@
         "noNoninteractiveElementInteractions": "off",
         "useKeyWithClickEvents": "off"
       },
+      "complexity": {
+        // API route handlers normalize several upstream payload shapes in one pass
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 30 }
+        }
+      },
       "performance": {
+        // Upstream APIs (TMDB, JustWatch) are paginated and rate-limited, so the
+        // routes deliberately await one page at a time.
+        "noAwaitInLoops": "off",
+        // `import * as schema` is the documented drizzle setup
+        "noNamespaceImport": "off",
+        // src/db/schema.ts is drizzle's schema barrel by design
+        "noBarrelFile": "off",
         // Regex in component scope is fine for this project's scale
         "useTopLevelRegex": "off",
         // delete operator usage is minimal and acceptable
-        "noDelete": "off"
+        "noDelete": "off",
+        // Inline handlers inside .map() are idiomatic React; hoisting each one
+        // would mean a component per row.
+        "noJsxPropsBind": "off"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      // JustWatch's GraphQL payload is untyped and deeply nested; these routes
+      // are pure normalization passes over it.
+      "includes": ["src/app/api/justwatch/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    }
+  ]
 }

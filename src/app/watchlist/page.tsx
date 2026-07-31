@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import WatchlistContent from "@/components/WatchlistContent";
 
 export const metadata: Metadata = {
-  title: "Mi Lista",
   description:
     "Tu lista personal de peliculas y series guardadas para ver mas tarde",
+  title: "Mi Lista",
 };
 
 export default function WatchlistPage() {

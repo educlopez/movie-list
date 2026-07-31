@@ -91,7 +91,9 @@ function SearchResults({
   }
 
   if (error) {
-    return <p className="p-4 text-red-500 text-sm">Error al cargar resultados</p>;
+    return (
+      <p className="p-4 text-red-500 text-sm">Error al cargar resultados</p>
+    );
   }
 
   const allResults = data?.results || [];
@@ -148,6 +150,7 @@ function SearchResults({
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">
                             <svg
+                              aria-hidden="true"
                               className="h-4 w-4 text-zinc-400"
                               fill="none"
                               stroke="currentColor"
@@ -202,6 +205,7 @@ function SearchResults({
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
                           <svg
+                            aria-hidden="true"
                             className="h-5 w-5 text-zinc-400 dark:text-zinc-600"
                             fill="none"
                             stroke="currentColor"
@@ -326,7 +330,7 @@ function SearchDialog({
                   ref={inputRef}
                   value={query}
                 />
-                {query && (
+                {query ? (
                   <button
                     className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
                     onClick={() => setQuery("")}
@@ -334,7 +338,7 @@ function SearchDialog({
                   >
                     Limpiar
                   </button>
-                )}
+                ) : null}
               </div>
 
               {/* Live results */}
@@ -368,18 +372,18 @@ function useSearchProps() {
 
   return {
     buttonProps: {
-      ref: buttonRef,
       onClick() {
         setOpen(true);
       },
+      ref: buttonRef,
     },
     dialogProps: {
       open,
-      setOpen(open: boolean) {
+      setOpen(nextOpen: boolean) {
         const { width = 0, height = 0 } =
           buttonRef.current?.getBoundingClientRect() ?? {};
-        if (!open || (width !== 0 && height !== 0)) {
-          setOpen(open);
+        if (!nextOpen || (width !== 0 && height !== 0)) {
+          setOpen(nextOpen);
         }
       },
     },

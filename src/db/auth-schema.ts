@@ -1,23 +1,25 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: integer("email_verified", { mode: "boolean" }).notNull().default(false),
-  image: text("image"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: integer("email_verified", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  id: text("id").primaryKey(),
+  image: text("image"),
+  name: text("name").notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   username: text("username"),
 });
 
 export const session = sqliteTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  token: text("token").notNull().unique(),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  id: text("id").primaryKey(),
   ipAddress: text("ip_address"),
+  token: text("token").notNull().unique(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
@@ -25,28 +27,32 @@ export const session = sqliteTable("session", {
 });
 
 export const account = sqliteTable("account", {
-  id: text("id").primaryKey(),
+  accessToken: text("access_token"),
+  accessTokenExpiresAt: integer("access_token_expires_at", {
+    mode: "timestamp",
+  }),
   accountId: text("account_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  id: text("id").primaryKey(),
+  idToken: text("id_token"),
+  password: text("password"),
   providerId: text("provider_id").notNull(),
+  refreshToken: text("refresh_token"),
+  refreshTokenExpiresAt: integer("refresh_token_expires_at", {
+    mode: "timestamp",
+  }),
+  scope: text("scope"),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
   userId: text("user_id")
     .notNull()
     .references(() => user.id),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  idToken: text("id_token"),
-  accessTokenExpiresAt: integer("access_token_expires_at", { mode: "timestamp" }),
-  refreshTokenExpiresAt: integer("refresh_token_expires_at", { mode: "timestamp" }),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
 export const verification = sqliteTable("verification", {
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
+  value: text("value").notNull(),
 });

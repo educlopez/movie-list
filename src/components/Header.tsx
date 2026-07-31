@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { motion, useScroll, useTransform } from "motion/react";
 import Link from "next/link";
-import { forwardRef, type ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { Logo } from "@/components/Logo";
 import {
   MobileNavigation,
@@ -47,10 +47,10 @@ interface HeaderProps {
   className?: string;
 }
 
-export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
-  { className },
-  ref
-) {
+export const Header = function Header({
+  className,
+  ref,
+}: HeaderProps & { ref?: RefObject<HTMLDivElement | null> }) {
   const { isOpen: mobileNavIsOpen } = useMobileNavigationStore();
   const isInsideMobileNavigation = useIsInsideMobileNavigation();
 
@@ -71,8 +71,8 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
       ref={ref}
       style={
         {
-          "--bg-opacity-light": bgOpacityLight,
           "--bg-opacity-dark": bgOpacityDark,
+          "--bg-opacity-light": bgOpacityLight,
         } as React.CSSProperties
       }
     >
@@ -119,4 +119,4 @@ export const Header = forwardRef<HTMLDivElement, HeaderProps>(function Header(
       </div>
     </motion.div>
   );
-});
+};

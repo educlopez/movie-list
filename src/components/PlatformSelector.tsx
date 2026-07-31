@@ -16,7 +16,8 @@ import PlatformGrid from "./PlatformGrid";
 
 export default function PlatformSelector() {
   const [isOpen, setIsOpen] = useState(false);
-  const { country, platforms, setCountry, togglePlatform } = useAuthPreferences();
+  const { country, platforms, setCountry, togglePlatform } =
+    useAuthPreferences();
 
   const { data } = useSWR<AvailablePlatformsData>(
     isOpen ? `/api/providers?country=${country}&type=movie` : null,
@@ -32,6 +33,7 @@ export default function PlatformSelector() {
         type="button"
       >
         <svg
+          aria-hidden="true"
           className="h-4 w-4"
           fill="none"
           stroke="currentColor"

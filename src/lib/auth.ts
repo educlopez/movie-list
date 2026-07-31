@@ -15,26 +15,16 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false, // set to true once domain verified in Resend
   },
-  user: {
-    additionalFields: {
-      username: {
-        type: "string",
-        required: false,
-      },
-    },
-  },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       if (!resend) {
         console.warn(
-          "RESEND_API_KEY not set — skipping verification email send",
+          "RESEND_API_KEY not set — skipping verification email send"
         );
         return;
       }
       await resend.emails.send({
         from: "Movielist <onboarding@resend.dev>",
-        to: user.email,
-        subject: "Verifica tu email - Movielist",
         html: `
           <h2>Bienvenido a Movielist</h2>
           <p>Hola ${user.name},</p>
@@ -42,7 +32,17 @@ export const auth = betterAuth({
           <a href="${url}" style="display:inline-block;padding:12px 24px;background:#10b981;color:white;text-decoration:none;border-radius:8px;">Verificar email</a>
           <p>Si no creaste esta cuenta, ignora este mensaje.</p>
         `,
+        subject: "Verifica tu email - Movielist",
+        to: user.email,
       });
+    },
+  },
+  user: {
+    additionalFields: {
+      username: {
+        required: false,
+        type: "string",
+      },
     },
   },
 });

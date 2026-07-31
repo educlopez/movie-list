@@ -24,14 +24,12 @@ function renderGenres(arr: Genre[]): ReactNode {
   if (arr.length === 0) {
     return "N/A";
   }
-  return arr.map((genre) => {
-    return (
-      <li
-        className="mr-2 mb-2 flex items-center justify-center rounded-md border-none bg-app-pure-white px-2 py-px text-center font-medium text-app-dark-blue"
-        key={genre.id}
-      >
-        {genre.name}
-      </li>
-    );
-  });
+  return arr.map((genre) => (
+    <li
+      className="mr-2 mb-2 flex items-center justify-center rounded-md border-none bg-app-pure-white px-2 py-px text-center font-medium text-app-dark-blue"
+      key={genre.id}
+    >
+      {genre.name}
+    </li>
+  ));
 }

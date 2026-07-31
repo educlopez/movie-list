@@ -7,9 +7,13 @@ let _db: ReturnType<typeof drizzle> | null = null;
 
 function getDb() {
   if (!_db) {
+    const url = process.env.TURSO_DATABASE_URL;
+    if (!url) {
+      throw new Error("TURSO_DATABASE_URL is not set");
+    }
     const client = createClient({
-      url: process.env.TURSO_DATABASE_URL!,
-      authToken: process.env.TURSO_AUTH_TOKEN!,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+      url,
     });
     _db = drizzle(client, { schema });
   }
@@ -20,7 +24,9 @@ function getDb() {
 export const db = new Proxy({} as ReturnType<typeof drizzle>, {
   get(_, prop) {
     const instance = getDb();
-    const value = (instance as unknown as Record<string | symbol, unknown>)[prop];
+    const value = (instance as unknown as Record<string | symbol, unknown>)[
+      prop
+    ];
     if (typeof value === "function") {
       return value.bind(instance);
     }

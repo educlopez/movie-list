@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { desc, eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { notification } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -40,9 +40,7 @@ export async function PUT(request: NextRequest) {
       await db
         .update(notification)
         .set({ read: true })
-        .where(
-          eq(notification.id, id)
-        );
+        .where(eq(notification.id, id));
     }
   } else {
     // Mark all as read
