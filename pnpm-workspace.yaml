@@ -1,0 +1,9 @@
+# Single-package repo. The `packages` field is required by pnpm 10, which is
+# what Vercel builds with; without it `pnpm install` fails on the build image.
+packages:
+  - "."
+
+allowBuilds:
+  # Both ship prebuilt binaries fetched by their install script.
+  esbuild: true
+  sharp: true

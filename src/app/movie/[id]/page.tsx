@@ -3,14 +3,14 @@ import Image from "next/image";
 
 import AlertButtonWrapper from "@/components/AlertButtonWrapper";
 import FilmCasts from "@/components/FilmCasts";
-import Recommendations from "@/components/Recommendations";
 import FilmGenres from "@/components/FilmGenres";
 import FilmHeading from "@/components/FilmHeading";
 import FilmInfo from "@/components/FilmInfo";
 import FilmSynopsis from "@/components/FilmSynopsis";
+import Recommendations from "@/components/Recommendations";
 import TrailerSection from "@/components/TrailerSection";
-import WatchProviders from "@/components/WatchProviders";
 import WatchlistButton from "@/components/WatchlistButton";
+import WatchProviders from "@/components/WatchProviders";
 import { getMovieCasts, getMovieDetail } from "@/lib/tmdb";
 import type { TMDBCreditsResponse, TMDBMovieDetail } from "@/types/tmdb";
 import { TMDB_IMAGE_ENDPOINT } from "@/utils";
@@ -47,19 +47,19 @@ export async function generateMetadata({
     ? `https://image.tmdb.org/t/p/w500${detail.poster_path}`
     : undefined;
   return {
-    title: detail.title,
     description:
       detail.overview || `Información sobre la película ${detail.title}`,
     openGraph: {
-      title: detail.title,
       description:
         detail.overview || `Información sobre la película ${detail.title}`,
+      title: detail.title,
       ...(posterUrl && {
         images: [
-          { url: posterUrl, width: 500, height: 750, alt: detail.title },
+          { alt: detail.title, height: 750, url: posterUrl, width: 500 },
         ],
       }),
     },
+    title: detail.title,
   };
 }
 

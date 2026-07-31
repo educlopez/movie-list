@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let allEdges: Array<Record<string, any>> = [];
+    let allEdges: Record<string, any>[] = [];
     let cursor: string | null = after;
     let totalCount = 0;
     const maxPages = 5;
@@ -58,10 +58,10 @@ export async function GET(request: NextRequest) {
     for (let page = 0; page < maxPages; page++) {
       const variables: Record<string, unknown> = {
         country,
-        first: 100,
         filter: {
           releaseYear: { min: currentYear },
         },
+        first: 100,
         sortBy: "POPULAR",
       };
       if (cursor) {
@@ -69,9 +69,9 @@ export async function GET(request: NextRequest) {
       }
 
       const res = await fetch(JUSTWATCH_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: UPCOMING_TITLES_QUERY, variables }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       });
 
       const json = await res.json();
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
         break;
       }
 
-      totalCount = pageData.totalCount;
+      ({ totalCount } = pageData);
       allEdges = allEdges.concat(pageData.edges || []);
 
       if (!pageData.pageInfo?.hasNextPage) {
@@ -104,13 +104,13 @@ export async function GET(request: NextRequest) {
         clearName: string;
         shortName: string;
         icon: string;
-        items: Array<Record<string, unknown>>;
+        items: Record<string, unknown>[];
       }
     > = {};
 
     for (const edge of allEdges) {
-      const node = edge.node;
-      const content = node.content;
+      const { node } = edge;
+      const { content } = node;
       if (!content) {
         continue;
       }
@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
           typeof rawTmdbId === "string" && rawTmdbId.includes(":")
             ? Number.parseInt(rawTmdbId.split(":")[0], 10)
             : Number.parseInt(rawTmdbId, 10);
-        if (!isNaN(parsed)) {
+        if (!Number.isNaN(parsed)) {
           tmdbId = parsed;
         }
       }
@@ -132,19 +132,21 @@ export async function GET(request: NextRequest) {
       // Determine the release date from upcomingReleases or fallback to year
       const upcomingReleases = content.upcomingReleases || [];
       const futureReleases = upcomingReleases.filter(
-        (r: { releaseDate: string }) => r.releaseDate >= new Date().toISOString().slice(0, 10)
+        (r: { releaseDate: string }) =>
+          r.releaseDate >= new Date().toISOString().slice(0, 10)
       );
 
       const item = {
+        genre_ids: [],
         id: tmdbId || node.objectId,
-        title: content.title || "",
+        jw_id: node.id,
         media_type: mediaType,
         poster_path: content.posterUrl || null,
-        release_date: futureReleases[0]?.releaseDate || `${content.originalReleaseYear}`,
+        release_date:
+          futureReleases[0]?.releaseDate || `${content.originalReleaseYear}`,
+        title: content.title || "",
         vote_average: 0,
         year: content.originalReleaseYear || 0,
-        genre_ids: [],
-        jw_id: node.id,
       };
 
       // Add to providers from upcoming releases
@@ -160,11 +162,11 @@ export async function GET(request: NextRequest) {
           const key = pkg.shortName;
           if (!providerMap[key]) {
             providerMap[key] = {
-              packageId: pkg.packageId,
               clearName: pkg.clearName,
-              shortName: pkg.shortName,
               icon: jwIcon(pkg.icon || ""),
               items: [],
+              packageId: pkg.packageId,
+              shortName: pkg.shortName,
             };
           }
           if (
@@ -173,7 +175,10 @@ export async function GET(request: NextRequest) {
                 i.id === item.id && i.media_type === item.media_type
             )
           ) {
-            providerMap[key].items.push({ ...item, release_date: release.releaseDate });
+            providerMap[key].items.push({
+              ...item,
+              release_date: release.releaseDate,
+            });
           }
         }
       }
@@ -191,11 +196,11 @@ export async function GET(request: NextRequest) {
           const key = pkg.shortName;
           if (!providerMap[key]) {
             providerMap[key] = {
-              packageId: pkg.packageId,
               clearName: pkg.clearName,
-              shortName: pkg.shortName,
               icon: jwIcon(pkg.icon || ""),
               items: [],
+              packageId: pkg.packageId,
+              shortName: pkg.shortName,
             };
           }
           if (
@@ -221,10 +226,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         date: new Date().toISOString().slice(0, 10),
-        totalCount,
-        providers,
-        hasNextPage: false,
         endCursor: null,
+        hasNextPage: false,
+        providers,
+        totalCount,
       },
       {
         headers: {

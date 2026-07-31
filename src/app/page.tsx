@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import CardRow from "@/components/CardRow";
 import type { CardRowFilters } from "@/components/CardRow";
+import CardRow from "@/components/CardRow";
 import FilterBar from "@/components/FilterBar";
 import GenreFilter from "@/components/GenreFilter";
 import HeroSection from "@/components/HeroSection";
@@ -23,10 +23,8 @@ export default function Home() {
     [selectedGenre, selectedRating, selectedYear]
   );
 
-  const hasActiveFilters =
-    selectedGenre !== null ||
-    selectedYear !== null ||
-    selectedRating !== null;
+  const _hasActiveFilters =
+    selectedGenre !== null || selectedYear !== null || selectedRating !== null;
 
   return (
     <div className="space-y-8">

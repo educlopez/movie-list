@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { alert, notification } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -10,12 +10,12 @@ async function getSession(request: NextRequest) {
 }
 
 interface CheckItem {
-  tmdbId: number;
   mediaType: "movie" | "tv";
-  title: string;
   posterPath: string;
-  providerName: string;
   providerIcon?: string;
+  providerName: string;
+  title: string;
+  tmdbId: number;
 }
 
 export async function POST(request: NextRequest) {
@@ -49,7 +49,9 @@ export async function POST(request: NextRequest) {
 
   for (const item of items) {
     const key = `${item.tmdbId}-${item.mediaType}`;
-    if (!alertMap.has(key)) continue;
+    if (!alertMap.has(key)) {
+      continue;
+    }
 
     // Check if notification already exists for this tmdbId + provider combo
     const existing = await db
@@ -65,19 +67,21 @@ export async function POST(request: NextRequest) {
       )
       .limit(1);
 
-    if (existing.length > 0) continue;
+    if (existing.length > 0) {
+      continue;
+    }
 
     await db.insert(notification).values({
-      userId: session.user.id,
-      tmdbId: item.tmdbId,
-      mediaType: item.mediaType,
-      title: item.title,
-      posterPath: item.posterPath,
-      providerName: item.providerName,
-      providerIcon: item.providerIcon ?? null,
-      type: "available",
-      read: false,
       createdAt: new Date(),
+      mediaType: item.mediaType,
+      posterPath: item.posterPath,
+      providerIcon: item.providerIcon ?? null,
+      providerName: item.providerName,
+      read: false,
+      title: item.title,
+      tmdbId: item.tmdbId,
+      type: "available",
+      userId: session.user.id,
     });
 
     created++;

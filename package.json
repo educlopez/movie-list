@@ -2,6 +2,7 @@
   "name": "movie-list",
   "version": "0.5.0",
   "private": true,
+  "packageManager": "pnpm@11.5.3",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,7 +10,8 @@
     "lint": "ultracite check",
     "postbuild": "next-sitemap",
     "check": "ultracite check",
-    "fix": "ultracite fix"
+    "fix": "ultracite fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -32,12 +34,12 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.10",
+    "@biomejs/biome": "2.5.6",
     "@types/node": "^25.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "drizzle-kit": "^0.31.10",
     "typescript": "^6.0.2",
-    "ultracite": "7.4.3"
+    "ultracite": "7.9.4"
   }
 }

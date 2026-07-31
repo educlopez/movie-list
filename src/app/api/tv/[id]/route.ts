@@ -18,8 +18,8 @@ export async function GET(
       response2.json(),
     ]);
     return NextResponse.json({
-      detail: data,
       credits: data2,
+      detail: data,
     });
   } catch (err) {
     return NextResponse.json(

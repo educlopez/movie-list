@@ -6,21 +6,21 @@ import { authClient } from "@/lib/auth-client";
 import { fetcher } from "@/utils";
 
 interface AlertDbItem {
-  id: number;
-  userId: string;
-  tmdbId: number;
-  mediaType: "movie" | "tv";
-  title: string;
-  posterPath: string;
   createdAt: string;
+  id: number;
+  mediaType: "movie" | "tv";
+  posterPath: string;
+  title: string;
+  tmdbId: number;
+  userId: string;
 }
 
 interface AlertButtonProps {
   id: number;
-  media_type: "movie" | "tv";
-  title: string;
-  poster_path: string;
   isAvailableOnMyPlatforms: boolean;
+  media_type: "movie" | "tv";
+  poster_path: string;
+  title: string;
 }
 
 export default function AlertButton({
@@ -45,20 +45,20 @@ export default function AlertButton({
   const handleToggle = useCallback(async () => {
     if (isTracking) {
       await fetch("/api/alerts", {
-        method: "DELETE",
+        body: JSON.stringify({ mediaType: media_type, tmdbId: id }),
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tmdbId: id, mediaType: media_type }),
+        method: "DELETE",
       });
     } else {
       await fetch("/api/alerts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tmdbId: id,
           mediaType: media_type,
-          title,
           posterPath: poster_path,
+          title,
+          tmdbId: id,
         }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       });
     }
     mutate();
@@ -71,7 +71,9 @@ export default function AlertButton({
 
   return (
     <button
-      aria-label={isTracking ? "Dejar de seguir" : "Avisarme cuando este disponible"}
+      aria-label={
+        isTracking ? "Dejar de seguir" : "Avisarme cuando este disponible"
+      }
       className={`group/alert inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
         isTracking
           ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
@@ -82,6 +84,7 @@ export default function AlertButton({
     >
       {isTracking ? (
         <svg
+          aria-hidden="true"
           className="h-4 w-4 text-emerald-500"
           fill="none"
           stroke="currentColor"
@@ -96,6 +99,7 @@ export default function AlertButton({
         </svg>
       ) : (
         <svg
+          aria-hidden="true"
           className="h-4 w-4 text-zinc-500 group-hover/alert:text-zinc-700 dark:text-zinc-400 dark:group-hover/alert:text-zinc-200"
           fill="none"
           stroke="currentColor"

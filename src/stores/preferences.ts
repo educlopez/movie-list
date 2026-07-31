@@ -18,6 +18,7 @@ export const usePreferences = create<PreferencesState>()(
       country: detectCountry(),
       platforms: [],
       setCountry: (country: string) => set({ country, platforms: [] }),
+      setPlatforms: (ids: number[]) => set({ platforms: ids }),
       togglePlatform: (id: number) => {
         const current = get().platforms;
         if (current.includes(id)) {
@@ -26,7 +27,6 @@ export const usePreferences = create<PreferencesState>()(
           set({ platforms: [...current, id] });
         }
       },
-      setPlatforms: (ids: number[]) => set({ platforms: ids }),
     }),
     { name: "movielist-preferences" }
   )

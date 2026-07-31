@@ -1,47 +1,47 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 // Re-export Better Auth tables
-export { user, session, account, verification } from "./auth-schema";
+export { account, session, user, verification } from "./auth-schema";
 
 // Custom app tables
 
 export const watchlistItem = sqliteTable("watchlist_item", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull(),
-  tmdbId: integer("tmdb_id").notNull(),
-  mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
-  title: text("title").notNull(),
-  posterPath: text("poster_path").notNull(),
   addedAt: integer("added_at", { mode: "timestamp_ms" }).notNull(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
+  posterPath: text("poster_path").notNull(),
+  title: text("title").notNull(),
+  tmdbId: integer("tmdb_id").notNull(),
+  userId: text("user_id").notNull(),
 });
 
 export const userPreference = sqliteTable("user_preference", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull().unique(),
   country: text("country").notNull(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
   platforms: text("platforms").notNull(), // JSON array: "[1,2,3]"
+  userId: text("user_id").notNull().unique(),
 });
 
 export const alert = sqliteTable("alert", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull(),
-  tmdbId: integer("tmdb_id").notNull(),
-  mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
-  title: text("title").notNull(),
-  posterPath: text("poster_path").notNull(),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
+  posterPath: text("poster_path").notNull(),
+  title: text("title").notNull(),
+  tmdbId: integer("tmdb_id").notNull(),
+  userId: text("user_id").notNull(),
 });
 
 export const notification = sqliteTable("notification", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull(),
-  tmdbId: integer("tmdb_id").notNull(),
-  mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
-  title: text("title").notNull(),
-  posterPath: text("poster_path").notNull(),
-  providerName: text("provider_name").notNull(),
-  providerIcon: text("provider_icon"),
-  type: text("type", { enum: ["available", "price_drop"] }).notNull(),
-  read: integer("read", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
+  posterPath: text("poster_path").notNull(),
+  providerIcon: text("provider_icon"),
+  providerName: text("provider_name").notNull(),
+  read: integer("read", { mode: "boolean" }).notNull().default(false),
+  title: text("title").notNull(),
+  tmdbId: integer("tmdb_id").notNull(),
+  type: text("type", { enum: ["available", "price_drop"] }).notNull(),
+  userId: text("user_id").notNull(),
 });

@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { watchlistItem } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
 
     if (existing.length === 0) {
       await db.insert(watchlistItem).values({
-        userId: session.user.id,
-        tmdbId: item.id,
-        mediaType: item.media_type,
-        title: item.title,
-        posterPath: item.poster_path,
         addedAt: new Date(item.added_at),
+        mediaType: item.media_type,
+        posterPath: item.poster_path,
+        title: item.title,
+        tmdbId: item.id,
+        userId: session.user.id,
       });
       merged++;
     }

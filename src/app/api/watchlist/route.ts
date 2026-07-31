@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { watchlistItem } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -51,12 +51,12 @@ export async function POST(request: NextRequest) {
   }
 
   const inserted = await db.insert(watchlistItem).values({
-    userId: session.user.id,
-    tmdbId,
-    mediaType,
-    title,
-    posterPath,
     addedAt: new Date(),
+    mediaType,
+    posterPath,
+    title,
+    tmdbId,
+    userId: session.user.id,
   });
 
   return NextResponse.json(inserted, { status: 201 });

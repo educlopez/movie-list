@@ -91,11 +91,11 @@ export default function HeroSection() {
           {title}
         </h1>
 
-        {item.overview && (
+        {item.overview ? (
           <p className="mb-4 line-clamp-2 max-w-2xl text-sm text-zinc-300 sm:text-base">
             {item.overview}
           </p>
-        )}
+        ) : null}
 
         <div className="flex items-center gap-4">
           {item.vote_average > 0 && (
@@ -116,9 +116,9 @@ export default function HeroSection() {
             return (
               <motion.button
                 animate={{
-                  width: isActive ? 48 : 6,
                   height: isActive ? 4 : 6,
                   opacity: isActive ? 1 : 0.5,
+                  width: isActive ? 48 : 6,
                 }}
                 aria-label={`Show trending item ${(i + 1).toString()}`}
                 className="relative overflow-hidden rounded-full bg-white/25"
@@ -130,7 +130,7 @@ export default function HeroSection() {
                     clearInterval(timerRef.current);
                   }
                 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                transition={{ damping: 30, stiffness: 400, type: "spring" }}
                 type="button"
                 whileHover={{ opacity: 1 }}
               >
@@ -143,11 +143,11 @@ export default function HeroSection() {
                       initial={{ width: 0 }}
                       key={`fill-${activeIndex}`}
                       transition={{
+                        opacity: { duration: 0.2 },
                         width: {
                           duration: isPaused ? 0 : AUTOPLAY_INTERVAL / 1000,
                           ease: "linear",
                         },
-                        opacity: { duration: 0.2 },
                       }}
                     />
                   )}

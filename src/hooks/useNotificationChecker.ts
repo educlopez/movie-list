@@ -8,8 +8,8 @@ import { fetcher } from "@/utils";
 
 interface AlertDbItem {
   id: number;
-  tmdbId: number;
   mediaType: "movie" | "tv";
+  tmdbId: number;
 }
 
 export function useNotificationChecker() {
@@ -24,19 +24,23 @@ export function useNotificationChecker() {
 
   const checkProviders = useCallback(
     async (providerGroups: JWProviderResults[]) => {
-      if (!isLoggedIn || !alerts || alerts.length === 0) return;
-      if (!providerGroups || providerGroups.length === 0) return;
+      if (!(isLoggedIn && alerts) || alerts.length === 0) {
+        return;
+      }
+      if (!providerGroups || providerGroups.length === 0) {
+        return;
+      }
 
       // Create a fingerprint to avoid re-checking the same data
       const fingerprint = providerGroups
         .map((pg) => `${pg.clearName}:${pg.items.length}`)
         .join(",");
-      if (fingerprint === lastCheckedRef.current) return;
+      if (fingerprint === lastCheckedRef.current) {
+        return;
+      }
       lastCheckedRef.current = fingerprint;
 
-      const alertSet = new Set(
-        alerts.map((a) => `${a.tmdbId}-${a.mediaType}`)
-      );
+      const alertSet = new Set(alerts.map((a) => `${a.tmdbId}-${a.mediaType}`));
 
       const matchedItems: Array<{
         tmdbId: number;
@@ -52,23 +56,25 @@ export function useNotificationChecker() {
           const key = `${item.id}-${item.media_type}`;
           if (alertSet.has(key)) {
             matchedItems.push({
-              tmdbId: item.id,
               mediaType: item.media_type,
-              title: item.title,
               posterPath: item.poster_path ?? "",
-              providerName: pg.clearName,
               providerIcon: pg.icon,
+              providerName: pg.clearName,
+              title: item.title,
+              tmdbId: item.id,
             });
           }
         }
       }
 
-      if (matchedItems.length === 0) return;
+      if (matchedItems.length === 0) {
+        return;
+      }
 
       await fetch("/api/notifications/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: matchedItems }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
       });
     },
     [isLoggedIn, alerts]

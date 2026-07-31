@@ -3,8 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import useSWRImmutable from "swr/immutable";
-import { TMDB_IMAGE_MULTIFACES } from "@/utils";
-import { fetcher } from "@/utils";
+import { fetcher, TMDB_IMAGE_MULTIFACES } from "@/utils";
 
 interface Video {
   id: string;
@@ -44,9 +43,13 @@ export default function TrailerSection({
 
   // Close on Escape key
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") {
+        close();
+      }
     };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
@@ -64,11 +67,12 @@ export default function TrailerSection({
     <>
       {/* Play button */}
       <button
-        className="group flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+        className="group flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 font-medium text-sm text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
         onClick={() => setIsOpen(true)}
         type="button"
       >
         <svg
+          aria-hidden="true"
           className="h-5 w-5"
           fill="currentColor"
           viewBox="0 0 24 24"
@@ -79,7 +83,7 @@ export default function TrailerSection({
       </button>
 
       {/* Cinematic modal */}
-      {isOpen && (
+      {isOpen ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           onClick={close}
@@ -91,6 +95,7 @@ export default function TrailerSection({
             type="button"
           >
             <svg
+              aria-hidden="true"
               className="h-6 w-6"
               fill="none"
               stroke="currentColor"
@@ -107,11 +112,11 @@ export default function TrailerSection({
 
           {/* Video container */}
           <div
-            className="relative w-full max-w-5xl mx-4"
+            className="relative mx-4 w-full max-w-5xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Backdrop glow behind video */}
-            {backdropPath && (
+            {backdropPath ? (
               <div className="absolute -inset-8 -z-10 opacity-30 blur-3xl">
                 <Image
                   alt=""
@@ -122,7 +127,7 @@ export default function TrailerSection({
                   unoptimized
                 />
               </div>
-            )}
+            ) : null}
             <div
               className="relative w-full overflow-hidden rounded-xl shadow-2xl"
               style={{ paddingBottom: "56.25%" }}
@@ -137,7 +142,7 @@ export default function TrailerSection({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

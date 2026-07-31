@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 import useSWR from "swr";
 import { useDragScroll } from "@/hooks/useDragScroll";
 import type { TMDBMediaItem, TMDBPaginatedResponse } from "@/types/tmdb";
@@ -28,18 +28,31 @@ function applyFilters(
   items: TMDBMediaItem[],
   filters?: CardRowFilters
 ): TMDBMediaItem[] {
-  if (!filters) return items;
+  if (!filters) {
+    return items;
+  }
   return items.filter((item) => {
-    if (filters.genre != null) {
-      if (!item.genre_ids?.includes(filters.genre)) return false;
+    const { genre, year, rating } = filters;
+    if (
+      genre !== null &&
+      genre !== undefined &&
+      !item.genre_ids?.includes(genre)
+    ) {
+      return false;
     }
-    if (filters.year != null) {
+    if (year !== null && year !== undefined) {
       const date = item.release_date || item.first_air_date || "";
       const itemYear = date ? Number(date.slice(0, 4)) : 0;
-      if (itemYear !== filters.year) return false;
+      if (itemYear !== year) {
+        return false;
+      }
     }
-    if (filters.rating != null) {
-      if ((item.vote_average ?? 0) < filters.rating) return false;
+    if (
+      rating !== null &&
+      rating !== undefined &&
+      (item.vote_average ?? 0) < rating
+    ) {
+      return false;
     }
     return true;
   });
@@ -57,13 +70,16 @@ export default function CardRow({
   const scrollRef = useDragScroll<HTMLUListElement>();
 
   const filteredResults = useMemo(() => {
-    if (!data) return [];
+    if (!data) {
+      return [];
+    }
     return applyFilters(data.results, filters).slice(0, 14);
   }, [data, filters]);
 
+  const isSet = (v: number | null | undefined) => v !== null && v !== undefined;
   const hasActiveFilters =
     filters &&
-    (filters.genre != null || filters.year != null || filters.rating != null);
+    (isSet(filters.genre) || isSet(filters.year) || isSet(filters.rating));
 
   return (
     <section className="mb-8">
@@ -81,14 +97,14 @@ export default function CardRow({
         </div>
       )}
 
-      {error && (
+      {error ? (
         <div
           className="rounded-lg bg-red-50 p-4 text-red-600 text-sm dark:bg-red-900/20 dark:text-red-400"
           role="alert"
         >
           No se pudo cargar {title.toLowerCase()}. Inténtalo de nuevo más tarde.
         </div>
-      )}
+      ) : null}
 
       {!(data || error) && <CardSkeleton />}
 

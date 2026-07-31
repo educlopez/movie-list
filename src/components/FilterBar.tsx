@@ -60,7 +60,7 @@ export default function FilterBar({
         ))}
       </select>
 
-      {hasFilters && (
+      {hasFilters ? (
         <button
           className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
           onClick={() => {
@@ -71,7 +71,7 @@ export default function FilterBar({
         >
           Limpiar
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

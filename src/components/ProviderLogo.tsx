@@ -29,11 +29,11 @@ export default function ProviderLogo({
       <span className="max-w-[60px] truncate text-center text-[10px] text-zinc-600 dark:text-zinc-400">
         {provider.provider_name}
       </span>
-      {isUserPlatform && (
+      {isUserPlatform ? (
         <span className="font-semibold text-[9px] text-emerald-600 dark:text-emerald-400">
           tuya
         </span>
-      )}
+      ) : null}
     </div>
   );
 }

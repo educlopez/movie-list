@@ -32,9 +32,11 @@ export default function RatingBadge({ rating, size = "sm" }: RatingBadgeProps) {
     <div
       aria-label={`Rating: ${rating.toFixed(1)} out of 10`}
       className="relative inline-flex items-center justify-center rounded-full bg-zinc-900/90 backdrop-blur-sm"
-      style={{ width: boxSize, height: boxSize }}
+      role="img"
+      style={{ height: boxSize, width: boxSize }}
     >
       <svg
+        aria-hidden="true"
         className="-rotate-90"
         height={viewBoxSize}
         style={{ position: "absolute" }}

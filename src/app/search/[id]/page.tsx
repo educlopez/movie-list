@@ -16,8 +16,8 @@ export async function generateMetadata({
   const { id } = await params;
   const query = decodeURIComponent(id);
   return {
-    title: `Buscar: ${query}`,
     description: `Resultados de búsqueda para "${query}" en películas y series`,
+    title: `Buscar: ${query}`,
   };
 }
 

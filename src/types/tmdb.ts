@@ -36,7 +36,9 @@ export interface TMDBLanguage {
 }
 
 /** Component type accepted by renderResults / renderResultsSlider. */
-export type MediaCardComponent = React.ComponentType<Omit<MediaCardProps, "key">>;
+export type MediaCardComponent = React.ComponentType<
+  Omit<MediaCardProps, "key">
+>;
 
 /** Motion animation settings (initial + animate + transition). */
 export interface MotionAnimationSettings {

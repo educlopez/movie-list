@@ -31,12 +31,12 @@ export async function GET(
     }
 
     return NextResponse.json({
+      alternatives: alternatives.slice(0, 10),
+      buy: countryData?.buy || [],
       country,
       flatrate: countryData?.flatrate || [],
-      rent: countryData?.rent || [],
-      buy: countryData?.buy || [],
       link: countryData?.link || "",
-      alternatives: alternatives.slice(0, 10),
+      rent: countryData?.rent || [],
     });
   } catch (err) {
     return NextResponse.json(

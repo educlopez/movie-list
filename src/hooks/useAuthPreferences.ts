@@ -26,8 +26,12 @@ export function useAuthPreferences() {
   // On first login: if DB has prefs, load them into local store.
   // If DB is empty, push local prefs to DB.
   useEffect(() => {
-    if (!isLoggedIn || hasSynced.current) return;
-    if (dbPrefs === undefined) return; // still loading
+    if (!isLoggedIn || hasSynced.current) {
+      return;
+    }
+    if (dbPrefs === undefined) {
+      return; // still loading
+    }
     hasSynced.current = true;
 
     if (dbPrefs.country && dbPrefs.platforms.length > 0) {
@@ -37,12 +41,12 @@ export function useAuthPreferences() {
     } else if (localStore.country || localStore.platforms.length > 0) {
       // Local has preferences, DB empty -> push to DB
       fetch("/api/preferences", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           country: localStore.country,
           platforms: localStore.platforms,
         }),
+        headers: { "Content-Type": "application/json" },
+        method: "PUT",
       });
     }
   }, [isLoggedIn, dbPrefs, localStore]);
@@ -53,9 +57,9 @@ export function useAuthPreferences() {
       localStore.setCountry(country);
       if (isLoggedIn) {
         fetch("/api/preferences", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ country, platforms: localStore.platforms }),
+          headers: { "Content-Type": "application/json" },
+          method: "PUT",
         }).then(() => mutate());
       }
     },
@@ -72,9 +76,12 @@ export function useAuthPreferences() {
           ? current.filter((p) => p !== id)
           : [...current, id];
         fetch("/api/preferences", {
-          method: "PUT",
+          body: JSON.stringify({
+            country: localStore.country,
+            platforms: updated,
+          }),
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ country: localStore.country, platforms: updated }),
+          method: "PUT",
         }).then(() => mutate());
       }
     },
@@ -86,9 +93,9 @@ export function useAuthPreferences() {
       localStore.setPlatforms(ids);
       if (isLoggedIn) {
         fetch("/api/preferences", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ country: localStore.country, platforms: ids }),
+          headers: { "Content-Type": "application/json" },
+          method: "PUT",
         }).then(() => mutate());
       }
     },
@@ -99,7 +106,7 @@ export function useAuthPreferences() {
     country: localStore.country,
     platforms: localStore.platforms,
     setCountry,
-    togglePlatform,
     setPlatforms,
+    togglePlatform,
   };
 }

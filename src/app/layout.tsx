@@ -38,34 +38,33 @@ const modeScript = `
 `;
 
 export const metadata = {
-  title: { default: "Movielist", template: "%s - Movielist" },
-  description:
-    "Descubre, explora y guarda tus películas y series favoritas. Información actualizada de estrenos, tendencias y plataformas de streaming.",
-  robots: "all",
-  openGraph: {
-    title: {
-      default: "Movielist",
-      template: "%s - Movielist",
-    },
-    description:
-      "Descubre, explora y guarda tus películas y series favoritas. Información actualizada de estrenos, tendencias y plataformas de streaming.",
-    siteName: "Movielist",
-    locale: "es_ES",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: {
-      default: "Movielist",
-      template: "%s - Movielist",
-    },
-    description:
-      "Descubre, explora y guarda tus películas y series favoritas.",
-  },
   alternates: {
     types: {
-      "application/rss+xml": `${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.xml`,
       "application/feed+json": `${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.json`,
+      "application/rss+xml": `${process.env.NEXT_PUBLIC_SITE_URL}/rss/feed.xml`,
+    },
+  },
+  description:
+    "Descubre, explora y guarda tus películas y series favoritas. Información actualizada de estrenos, tendencias y plataformas de streaming.",
+  openGraph: {
+    description:
+      "Descubre, explora y guarda tus películas y series favoritas. Información actualizada de estrenos, tendencias y plataformas de streaming.",
+    locale: "es_ES",
+    siteName: "Movielist",
+    title: {
+      default: "Movielist",
+      template: "%s - Movielist",
+    },
+    type: "website",
+  },
+  robots: "all",
+  title: { default: "Movielist", template: "%s - Movielist" },
+  twitter: {
+    card: "summary_large_image",
+    description: "Descubre, explora y guarda tus películas y series favoritas.",
+    title: {
+      default: "Movielist",
+      template: "%s - Movielist",
     },
   },
 };
