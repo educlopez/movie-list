@@ -76,11 +76,10 @@ export default function CardRow({
     return applyFilters(data.results, filters).slice(0, 14);
   }, [data, filters]);
 
+  const isSet = (v: number | null | undefined) => v !== null && v !== undefined;
   const hasActiveFilters =
     filters &&
-    (filters.genre !== null ||
-      filters.year !== null ||
-      filters.rating !== null);
+    (isSet(filters.genre) || isSet(filters.year) || isSet(filters.rating));
 
   return (
     <section className="mb-8">
