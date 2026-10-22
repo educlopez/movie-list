@@ -12,7 +12,6 @@ overrides:
   "@libsql/isomorphic-ws>ws": "^8.21.0"
   "@tailwindcss/postcss>postcss": "^8.5.23"
   "brace-expansion@5": "^5.0.12"
-  "drizzle-kit>tsx": "^4.23.15"
   "nanoid@3": "^3.3.18"
   "next>baseline-browser-mapping": "^2.11.0"
   "picomatch@2": "^2.3.2"
